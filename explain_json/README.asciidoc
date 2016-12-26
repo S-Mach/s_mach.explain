@@ -4,13 +4,7 @@ v1,16-Feb-16
 :blogpost-status: unpublished
 :blogpost-categories: s_mach, scala
 
-image:https://travis-ci.org/S-Mach/s_mach.explain_json.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.explain_json"]
-image:https://coveralls.io/repos/S-Mach/s_mach.explain_json/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.explain_json"]
-image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.explain_json"]
-https://github.com/S-Mach/s_mach.explain_json[Code]
-http://s-mach.github.io/s_mach.explain_json/#s_mach.explain_json.package[Scaladoc]
-
-+s_mach.explain_json+ an open-source Scala library with utility methods for generating a
++s_mach.explain_json+ is an open-source Scala library with utility methods for generating a
  JSONSchema or a human-readable explanation for specific JSON serializers. See
  +s_mach.explain_play_json+ for Play-framework JSON support.
 
@@ -21,8 +15,7 @@ http://s-mach.github.io/s_mach.explain_json/#s_mach.explain_json.package[Scalado
 ----
 libraryDependencies += "net.s_mach" %% "explain_json" % "1.0.0"
 ----
-NOTE: +s_mach.explain_json+ is currently only compiled for Scala 2.11 (though 2.10.4
-support can be added if there is interest)
+NOTE: +s_mach.explain_json+ is cross compiled for Scala 2.11/JDK6 and 2.12/JDK8
 
 == Versioning
 +s_mach.explain_json+ uses semantic versioning (http://semver.org/). +s_mach.explain_json+
