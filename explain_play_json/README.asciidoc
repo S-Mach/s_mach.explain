@@ -1,0 +1,154 @@
+= s_mach.explain_play_json: Play JSON Utility library
+Lance Gatlin <lance.gatlin@gmail.com>
+v1,16-Feb-16
+:blogpost-status: unpublished
+:blogpost-categories: s_mach, scala
+
+image:https://travis-ci.org/S-Mach/s_mach.explain_play_json.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.explain_play_json"]
+image:https://coveralls.io/repos/S-Mach/s_mach.explain_play_json/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.explain_play_json"]
+image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.explain_play_json"]
+https://github.com/S-Mach/s_mach.explain_play_json[Code]
+http://s-mach.github.io/s_mach.explain_play_json/#s_mach.explain_play_json.package[Scaladoc]
+
++s_mach.explain_play_json+ an open-source Scala library for generating a JSONSchema or a human-readable explanation for
+Play-framework JSON serializers.
+
+== Include in SBT
+1. Add to +build.sbt+
++
+[source,sbt,numbered]
+----
+libraryDependencies += "net.s_mach" %% "explain_play_json" % "1.0.0"
+----
+NOTE: +s_mach.explain_play_json+ is currently only compiled for Scala 2.11 (though 2.10.4
+support can be added if there is interest)
+
+== Versioning
++s_mach.explain_play_json+ uses semantic versioning (http://semver.org/). +s_mach.explain_play_json+
+does not use the package private modifier. Instead, all code files outside of
+the +s_mach.explain_play_json.impl+ package form the public interface and are governed by
+the rules of semantic versioning. Code files inside the +s_mach.explain_play_json.impl+
+package may be used by downstream applications and libraries. However, no
+guarantees are made as to the stability or interface of code in the
++s_mach.explain_play_json.impl+ package between versions.
+
+== Features
+
+* Create a JsonExplanation for any Play-framework JSON (de)serializer (including macro-generated
+(de)serializers for case classes)
+* From JsonExplanation:
+** Generation a JSONSchema (http://json-schema.org/)
+** Generate human-readable remarks as a list of strings or as JSON
+
+== Examples
+
+----
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  import s_mach.codetools.play_json._
+  import s_mach.explain_play_json.PlayJsonWriter.Implicits.playJsonWriter
+  import s_mach.explain_play_json._
+
+  case class Name(
+    first: String,
+    middle: Option[String],
+    last: String
+  )
+  implicit val explainJson_Name =
+    ExplainPlayJson.forProductType[Name]
+
+  case class Person(
+    name: Name,
+    age : Int,
+    friendIds: List[Int]
+  )
+  implicit val explainJson_Person =
+    ExplainPlayJson.forProductType[Person]
+
+
+// Exiting paste mode, now interpreting.
+
+import s_mach.codetools.play_json._
+import s_mach.explain_play_json.PlayJsonWriter.Implicits.playJsonWriter
+import s_mach.explain_play_json._
+defined class Name
+explainJson_Name: s_mach.explain_play_json.ExplainPlayJson[Name] = ExplainPlayJsonImpl(Rec(JsonObject(false,List(),List()),List((first,Val(JsonString(false,List(),List(),List()))), (middle,Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(),List())))), (last,Val(JsonString(false,List(),List(),List()))))))
+defined class Person
+explainJson_Person: s_mach.explain_play_json.ExplainPlayJson[Person] = ExplainPlayJsonImpl(Rec(JsonObject(false,List(),List()),List((name,Rec(JsonObject(false,List(),List()),List((first,Val(JsonString(false,List(),List(),List()))), (middle,Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(...
+
+scala> println(explainPlayJson[Person].explain.printJsonSchema("http://test.org").pretty)
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "id" : "http://test.org",
+  "type" : "object",
+  "properties" : {
+    "name" : {
+      "id" : "http://test.org/name",
+      "type" : "object",
+      "properties" : {
+        "first" : {
+          "id" : "http://test.org/name/first",
+          "type" : "string"
+        },
+        "middle" : {
+          "id" : "http://test.org/name/middle",
+          "type" : "string"
+        },
+        "last" : {
+          "id" : "http://test.org/name/last",
+          "type" : "string"
+        }
+      },
+      "additionalProperties" : true,
+      "required" : [ "first", "last" ]
+    },
+    "age" : {
+      "id" : "http://test.org/age",
+      "type" : "integer"
+    },
+    "friendIds" : {
+      "type" : "array",
+      "minItems" : 0,
+      "uniqueItems" : false,
+      "additionalItems" : false,
+      "items" : {
+        "id" : "http://test.org/friendIds/1",
+        "type" : "integer"
+      }
+    }
+  },
+  "additionalProperties" : true,
+  "required" : [ "name", "age", "friendIds" ]
+}
+
+scala> explainPlayJson[Person].printRemarksJson.pretty
+res1: String =
+{
+  "name" : {
+    "first" : [ "must be string" ],
+    "middle" : [ "must be string", "optional" ],
+    "last" : [ "must be string" ]
+  },
+  "age" : [ "must be integer" ],
+  "friendIds" : {
+    "this" : [ "must be array" ],
+    "*" : [ "must be integer" ]
+  }
+}
+
+scala> explainPlayJson[Person].printRemarks.print.foreach(println)
+name.first: must be string
+name.middle: must be string
+name.middle: optional
+name.last: must be string
+age: must be integer
+friendIds: must be array
+friendIds[*]: must be integer
+
+scala>
+----

@@ -1,0 +1,149 @@
+= s_mach.explain_json: Metadata library
+Lance Gatlin <lance.gatlin@gmail.com>
+v1,16-Feb-16
+:blogpost-status: unpublished
+:blogpost-categories: s_mach, scala
+
+image:https://travis-ci.org/S-Mach/s_mach.explain_json.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.explain_json"]
+image:https://coveralls.io/repos/S-Mach/s_mach.explain_json/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.explain_json"]
+image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.explain_json"]
+https://github.com/S-Mach/s_mach.explain_json[Code]
+http://s-mach.github.io/s_mach.explain_json/#s_mach.explain_json.package[Scaladoc]
+
++s_mach.explain_json+ an open-source Scala library with utility methods for generating a
+ JSONSchema or a human-readable explanation for specific JSON serializers. See
+ +s_mach.explain_play_json+ for Play-framework JSON support.
+
+== Include in SBT
+1. Add to +build.sbt+
++
+[source,sbt,numbered]
+----
+libraryDependencies += "net.s_mach" %% "explain_json" % "1.0.0"
+----
+NOTE: +s_mach.explain_json+ is currently only compiled for Scala 2.11 (though 2.10.4
+support can be added if there is interest)
+
+== Versioning
++s_mach.explain_json+ uses semantic versioning (http://semver.org/). +s_mach.explain_json+
+does not use the package private modifier. Instead, all code files outside of
+the +s_mach.explain_json.impl+ package form the public interface and are governed by
+the rules of semantic versioning. Code files inside the +s_mach.explain_json.impl+
+package may be used by downstream applications and libraries. However, no
+guarantees are made as to the stability or interface of code in the
++s_mach.explain_json.impl+ package between versions.
+
+== Features
+
+* Given a JsonExplanation (see https://github.com/S-Mach/s_mach.explain_play_json[+s_mach.explain_play_json+] for
+JsonExplanation generators for Play-framework JSON):
+** Generate a JsonSchema (http://json-schema.org/)
+** Generate human-readable remarks as a list of strings or as JSON
+
+== Example
+
+----
+[info] Starting scala interpreter...
+[info]
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  import s_mach.metadata._
+  import s_mach.explain_json._
+  import s_mach.explain_json.JsonExplanationNode._
+  import s_mach.explain_json.JsonWriter.Implicits.jsonStringWriter
+
+  // Generator libraries will provide these mappings between built-in types and JSON types
+  val jsonExplanation_String : JsonExplanation =
+    TypeMetadata.Val(JsonString())
+
+  // A prototypical implicit def generated JSON explanation for Option[String]
+  val jsonExplanation_Option_String : JsonExplanation =
+    TypeMetadata.Arr(
+      OptionMarker,
+      Cardinality.ZeroOrOne,
+      TypeMetadata.Val(
+        jsonExplanation_String.value.asInstanceOf[JsonExplanationNode.JsonType].isOptional(true)
+      )
+    )
+
+  case class Name(
+    first : String,
+    middle: Option[String],
+    last: String
+  )
+
+  // A prototypical macro-generated JSON explanation for Name case class
+  val jsonExplanation_Name : JsonExplanation =
+    TypeMetadata.Rec(
+      JsonObject(),
+      Seq(
+        "first" -> jsonExplanation_String,
+        "middle" -> jsonExplanation_Option_String,
+        "last" -> jsonExplanation_String
+      )
+    )
+
+
+// Exiting paste mode, now interpreting.
+
+import s_mach.metadata._
+import s_mach.explain_json._
+import s_mach.explain_json.JsonExplanationNode._
+import s_mach.explain_json.JsonWriter.Implicits.jsonStringWriter
+jsonExplanation_String: s_mach.explain_json.JsonExplanation = Val(JsonString(false,List(),List(),List()))
+jsonExplanation_Option_String: s_mach.explain_json.JsonExplanation = Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(),List())))
+defined class Name
+jsonExplanation_Name: s_mach.explain_json.JsonExplanation = Rec(JsonObject(false,List(),List()),List((first,Val(JsonString(false,List(),List(),List()))), (middle,Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(),List())))), (last,Val(JsonString(false,List(),List(),List())))))
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  // Note: prettyJson is only used here as test dep for demo
+  // s_mach.explain_play_json provides actual impl
+  jsonExplanation_Name.printJsonSchema("http://test.org").prettyJson
+
+
+// Exiting paste mode, now interpreting.
+
+res1: String =
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "id" : "http://test.org",
+  "type" : "object",
+  "properties" : {
+    "first" : {
+      "id" : "http://test.org/first",
+      "type" : "string"
+    },
+    "middle" : {
+      "id" : "http://test.org/middle",
+      "type" : "string"
+    },
+    "last" : {
+      "id" : "http://test.org/last",
+      "type" : "string"
+    }
+  },
+  "additionalProperties" : true,
+  "required" : [ "first", "last" ]
+}
+
+scala> jsonExplanation_Name.printRemarksJson.prettyJson
+res2: String =
+{
+  "first" : [ "must be string" ],
+  "middle" : [ "must be string", "optional" ],
+  "last" : [ "must be string" ]
+}
+
+scala> jsonExplanation_Name.printRemarks.print
+res3: List[String] = List(first: must be string, middle: must be string, middle: optional, last: must be string)
+
+scala>
+----
+

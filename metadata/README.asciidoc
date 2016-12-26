@@ -1,0 +1,129 @@
+= s_mach.metadata: Metadata library
+Lance Gatlin <lance.gatlin@gmail.com>
+v1,05-Mar-16
+:blogpost-status: unpublished
+:blogpost-categories: s_mach, scala
+
+image:https://travis-ci.org/S-Mach/s_mach.metadata.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.metadata"]
+image:https://coveralls.io/repos/S-Mach/s_mach.metadata/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.metadata"]
+image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.metadata"]
+https://github.com/S-Mach/s_mach.metadata[Code]
+http://s-mach.github.io/s_mach.metadata/#s_mach.metadata.package[Scaladoc]
+
++s_mach.metadata+ is an open-source Scala library that provides primitives for
+creating generic metadata about data instances and data types.
+
+== Include in SBT
+1. Add to +build.sbt+
++
+[source,sbt,numbered]
+----
+libraryDependencies += "net.s_mach" %% "metadata" % "1.0.0"
+----
+NOTE: +s_mach.metadata+ is currently only compiled for Scala 2.11 (though 2.10.4
+support can be added if there is interest)
+
+== Versioning
++s_mach.metadata+ uses semantic versioning (http://semver.org/). +s_mach.metadata+
+does not use the package private modifier. Instead, all code files outside of
+the +s_mach.metadata.impl+ package form the public interface and are governed by
+the rules of semantic versioning. Code files inside the +s_mach.metadata.impl+
+package may be used by downstream applications and libraries. However, no
+guarantees are made as to the stability or interface of code in the
++s_mach.metadata.impl+ package between versions.
+
+== Features
+
+* Create metadata about the fields, array members or values of an instance of data using +Metadata[A]+
+
+* Create metadata about the fields, array type or value types of a data type using +TypeMetadata[A]+
+
+== Examples
+
+----
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import s_mach.metadata._
+import s_mach.metadata._
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val m : Metadata[List[String]] = Metadata.Rec(
+  value = List("invalid"),
+  fields = Seq(
+    "id" -> Metadata.Val(List("ok")),
+    "name" -> Metadata.Rec(
+      value = List("invalid"),
+      fields = Seq(
+        "first" -> Metadata.Val(List("ok")),
+        "last" -> Metadata.Val(List("invalid"))
+      )
+    ),
+    "friendIds" -> Metadata.Arr(
+      value = List("ok"),
+      cardinality = Cardinality.ZeroOrMore,
+      members = Seq(
+        Metadata.Val(List("ok")),
+        Metadata.Val(List("ok")),
+        Metadata.Val(List("invalid"))
+      )
+    )
+  )
+)
+
+
+// Exiting paste mode, now interpreting.
+
+m: s_mach.metadata.Metadata[List[String]] = Rec(List(invalid),List((id,Val(List(ok))), (name,Rec(List(invalid),List((first,Val(List(ok))), (last,Val(List(invalid)))))), (friendIds,Arr(List(ok),ZeroOrMore,List(Val(List(ok)), Val(List(ok)), Val(List(invalid)))))))
+
+scala> m.print.foreach(println)
+this: invalid
+id: ok
+name: invalid
+name.first: ok
+name.last: invalid
+friendIds: ok
+friendIds[0]: ok
+friendIds[1]: ok
+friendIds[2]: invalid
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+val tm : TypeMetadata[List[String]] = TypeMetadata.Rec(
+  value = List("id plus length(name) must be greater than 0"),
+  fields = Seq(
+    "id" -> TypeMetadata.Val(List("must be greater than 0")),
+    "name" -> TypeMetadata.Rec(
+      value = Nil,
+      fields = Seq(
+        "first" -> TypeMetadata.Val(List("must not be empty")),
+        "last" -> TypeMetadata.Val(List("must not be empty"))
+      )
+    ),
+    "friendIds" -> TypeMetadata.Arr(
+      value = List("may contain zero or more members"),
+      cardinality = Cardinality.ZeroOrMore,
+      membersTypeMetadata = TypeMetadata.Val(List("must be greater than 0"))
+    )
+  )
+)
+
+
+// Exiting paste mode, now interpreting.
+
+tm: s_mach.metadata.TypeMetadata[List[String]] = Rec(List(id plus length(name) must be greater than 0),List((id,Val(List(must be greater than 0))), (name,Rec(List(),List((first,Val(List(must not be empty))), (last,Val(List(must not be empty)))))), (friendIds,Arr(List(may contain zero or more members),ZeroOrMore,Val(List(must be greater than 0))))))
+
+scala> tm.print.foreach(println)
+this: id plus length(name) must be greater than 0
+id: must be greater than 0
+name.first: must not be empty
+name.last: must not be empty
+friendIds: may contain zero or more members
+friendIds[*]: must be greater than 0
+
+scala>
+----
