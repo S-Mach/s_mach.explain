@@ -4,12 +4,6 @@ v1,05-Mar-16
 :blogpost-status: unpublished
 :blogpost-categories: s_mach, scala
 
-image:https://travis-ci.org/S-Mach/s_mach.metadata.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.metadata"]
-image:https://coveralls.io/repos/S-Mach/s_mach.metadata/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.metadata"]
-image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.metadata"]
-https://github.com/S-Mach/s_mach.metadata[Code]
-http://s-mach.github.io/s_mach.metadata/#s_mach.metadata.package[Scaladoc]
-
 +s_mach.metadata+ is an open-source Scala library that provides primitives for
 creating generic metadata about data instances and data types.
 
