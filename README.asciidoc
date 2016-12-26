@@ -11,7 +11,7 @@ https://github.com/S-Mach/s_mach.explain[Code]
 http://s-mach.github.io/s_mach.explain/#s_mach.explain.package[Scaladoc]
 
 +s_mach.explain+ is a collection of open-source Scala libraries that provide primitives for
-generation human-readable documentation.
+generating human-readable explanations and machine-readable schema for data.
 
 == Libraries
 
