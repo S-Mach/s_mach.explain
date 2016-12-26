@@ -15,12 +15,11 @@ generating human-readable explanations and machine-readable schema for data.
 
 == Libraries
 
-* https://github.com/S-Mach/s_mach.explain/tree/master/metadata[s_mach.metadata] is an open-source Scala library that provides primitives for
-creating generic metadata about data instances and data types.
+* https://github.com/S-Mach/s_mach.explain/tree/master/metadata[s_mach.metadata] is an open-source Scala library that
+provides primitives for creating generic metadata about data instances and data types.
 
-* https://github.com/S-Mach/s_mach.explain/tree/master/explain_json[s_mach.explain_json] is an open-source Scala library with utility methods for generating a
-JSONSchema or a human-readable explanation for specific JSON serializers. See
-+s_mach.explain_play_json+ for Play-framework JSON support.
+* https://github.com/S-Mach/s_mach.explain/tree/master/explain_json[s_mach.explain_json] is an open-source Scala library
+with primitives for generating JSONSchema or human-readable explanations for JSON serializers.
 
-* https://github.com/S-Mach/s_mach.explain/tree/master/explain_play_json[s_mach.explain_play_json] is an open-source Scala library for generating a JSONSchema or a
-human-readable explanation for Play-framework JSON serializers.
+* https://github.com/S-Mach/s_mach.explain/tree/master/explain_play_json[s_mach.explain_play_json] is an open-source
+Scala library for generating JSONSchema or human-readable explanations for Play-framework JSON serializers.
