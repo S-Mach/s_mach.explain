@@ -20,7 +20,7 @@ script:
 after_success:
  # bug where need to run this twice for coverage to work
  # https://github.com/kamilkloch/scoverage-multi-module
- #- sbt coverage "plz $TRAVIS_SCALA_VERSION test" coverageReport  -J-Xmx4g
+ - sbt coverage "plz $TRAVIS_SCALA_VERSION test" coverageReport  -J-Xmx4g
  - sbt coverageReport
  - sbt coverageAggregate
  - sbt coveralls
