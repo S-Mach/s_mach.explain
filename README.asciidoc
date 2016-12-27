@@ -7,8 +7,6 @@ v1,26-Dec-16
 image:https://travis-ci.org/S-Mach/s_mach.explain.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.explain"]
 image:https://coveralls.io/repos/S-Mach/s_mach.explain/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.explain"]
 image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.explain"]
-https://github.com/S-Mach/s_mach.explain[Code]
-http://s-mach.github.io/s_mach.explain/#s_mach.explain.package[Scaladoc]
 
 +s_mach.explain+ is a collection of open-source Scala libraries that provide primitives for
 generating human-readable explanations and machine-readable schema for data.
