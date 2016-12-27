@@ -16,12 +16,9 @@ script:
  # Fix issue where JDK env from matrix above not picked up by travis
  - jdk_switcher use $JDK
  # Use plz instead of ++ from sbt-doge plugin to respect subproject crossScalaVersions
- - sbt clean coverage "plz $TRAVIS_SCALA_VERSION test"  -J-Xmx4g
+ - sbt "plz $TRAVIS_SCALA_VERSION test"  -J-Xmx4g
 after_success:
- # bug where need to run this twice for coverage to work
- # https://github.com/kamilkloch/scoverage-multi-module
- - sbt coverage "plz $TRAVIS_SCALA_VERSION test" coverageReport  -J-Xmx4g
- - sbt coverageReport
+ - sbt clean coverage test coverageReport  -J-Xmx4g
  - sbt coverageAggregate
  - sbt coveralls
  - sbt codacyCoverage
