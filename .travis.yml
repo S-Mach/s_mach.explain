@@ -18,12 +18,20 @@ script:
  # Use plz instead of ++ from sbt-doge plugin to respect subproject crossScalaVersions
  - sbt "plz $TRAVIS_SCALA_VERSION test"  -J-Xmx4g
 after_success:
- - sbt clean coverage test coverageReport  -J-Xmx4g
- - sbt coverageAggregate
- - sbt coveralls
- - sbt codacyCoverage
  - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
-      test "${TRAVIS_BRANCH}" == 'master' &&
-      test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
-      sbt 'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))' publish
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt clean coverage test coverageReport  -J-Xmx4g
+ - >
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt coverageAggregate
+ - >
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt coveralls
+ - >
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt codacyCoverage
+#- >
+#      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
+#      test "${TRAVIS_BRANCH}" == 'master' &&
+#      test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
+#      sbt 'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))' publish

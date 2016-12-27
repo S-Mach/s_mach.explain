@@ -1,10 +1,10 @@
 
-lazy val metadata = project.settings(coverageEnabled := true)
+lazy val metadata = project
 
 lazy val explain_json =
   project
-    .dependsOn(metadata).settings(coverageEnabled := true)
+    .dependsOn(metadata)
 
 lazy val explain_play_json =
   project
-    .dependsOn(explain_json).settings(coverageEnabled := true)
+    .dependsOn(explain_json)
