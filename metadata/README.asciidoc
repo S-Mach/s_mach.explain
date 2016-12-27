@@ -4,7 +4,7 @@ v1,05-Mar-16
 :blogpost-status: unpublished
 :blogpost-categories: s_mach, scala
 
-Scaladocs: http://s-mach.github.io/s_mach.explain/metadata/2.11.x/#s_mach.explain.package[2.11] https://s-mach.github.io/s_mach.explain/metadata/2.12.x/s_mach/string/index.html[2.12]
+Scaladocs: http://s-mach.github.io/s_mach.explain/metadata/2.11.x/[2.11] https://s-mach.github.io/s_mach.explain/metadata/2.12.x/s_mach/metadata/index.html[2.12]
 
 +s_mach.metadata+ is an open-source Scala library that provides primitives for
 creating generic metadata about data instances and data types.
