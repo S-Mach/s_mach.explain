@@ -1,4 +1,4 @@
-= s_mach.explain: Human-readable documentation generation library
+= s_mach.explain: data docs generation libraries
 Lance Gatlin <lance.gatlin@gmail.com>
 v1,26-Dec-16
 :blogpost-status: unpublished
