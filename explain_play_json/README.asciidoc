@@ -4,6 +4,8 @@ v1,16-Feb-16
 :blogpost-status: unpublished
 :blogpost-categories: s_mach, scala
 
+Scaladocs: http://s-mach.github.io/s_mach.explain/explain_play_json/2.11.x/[2.11] https://s-mach.github.io/s_mach.explain/explain_play_json/2.12.x/s_mach/explain_play_json/index.html[2.12]
+
 +s_mach.explain_play_json+ is an open-source Scala library for generating a JSONSchema or a human-readable explanation for
 Play-framework JSON serializers.
 
