@@ -18,6 +18,12 @@
 */
 package s_mach.explain_json
 
+/**
+  * A type-class for building an already configured instance
+  * of a JsonBuilder
+  * @tparam JsonRepr type of the JSON representation (e.g. String)
+  */
 trait JsonBuilderFactory[JsonRepr] {
+  /** @return an empty instance of a JsonBuilder */
   def apply() : JsonBuilder[JsonRepr]
 }

@@ -25,61 +25,60 @@ class MetadataBuildJsonImpl[A](implicit
   buildVal: BuildJson[A]
 ) extends BuildJson[Metadata[A]] {
 
-  def build(builder: JsonBuilder[_], a: Metadata[A]) = {
+  def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Metadata[A]) = {
     import builder._
-    val _buildVal = buildVal.build(builder,_:A)
 
-    def loop : Metadata[A] => Boolean = {
+    val _buildVal = buildVal.build(builder,_:A)
+    def pruneIfEmpty(build: => Unit) : Boolean = {
+      val saved = save()
+      build
+      if(lastIsEmpty) {
+        restore(saved)
+        true
+      } else {
+        false
+      }
+    }
+
+    def loop : Metadata[A] => Unit = {
       case Metadata.Val(value) =>
         _buildVal(value)
 
-  //      case Metadata.Arr(value,Cardinality.ZeroOrOne,members) =>
-  //        jsArray {
-  //          members.headOption.foreach(loop)
-  //          members.
-  //        }
-
       case a@Metadata.Arr(value,cardinality,_) =>
-        jsObject {
-          val hasThis = buildIf {
-            jsField("this") {
+        appendObject {
+          pruneIfEmpty {
+            appendField("this") {
               _buildVal(value)
             }
           }
-          val hasMembers=
-            a.indexToMetadata.foldLeft(false) { case (acc,(index, memberMetadata)) =>
-              buildIf {
-                jsField(index.toString) {
-                  loop(memberMetadata)
-                }
-              } || acc
+          a.indexToMetadata.foreach { case (index, memberMetadata) =>
+            pruneIfEmpty {
+              appendField(index.toString) {
+                loop(memberMetadata)
+              }
             }
-          hasThis || hasMembers
+          }
         }
 
       case r@Metadata.Rec(value,_) =>
-        jsObject {
-          val hasThis = buildIf {
-            jsField("this") {
+        appendObject {
+          pruneIfEmpty {
+            appendField("this") {
               _buildVal(value)
             }
           }
-          val hasFields =
-            r.fieldToMetadata.foldLeft(false) { case (acc,(field, memberMetadata)) =>
-              buildIf {
-                jsField(field) {
-                  loop(memberMetadata)
-                }
-              } || acc
+          r.fieldToMetadata.foreach { case (field, memberMetadata) =>
+            pruneIfEmpty {
+              appendField(field) {
+                loop(memberMetadata)
+              }
             }
-          hasThis || hasFields
+          }
         }
     }
 
-    buildIfOrElse(
-      loop(a)
-    ) {
-      jsNull()
+    if(pruneIfEmpty(loop(a))) {
+      append(null)
     }
   }
 }

@@ -18,17 +18,17 @@
 */
 package s_mach.explain_json
 
+object Implicits extends Implicits
 trait Implicits {
   implicit object JsonStringBuilderFactory extends JsonBuilderFactory[String] {
     def apply() = JsonStringBuilder(1024)
   }
 
   implicit object buildJson_ListString extends BuildJson[List[String]] {
-    def build(builder: JsonBuilder[_], a: List[String]) = {
+    def build[R](builder: JsonBuilder[R], a: List[String]) = {
       import builder._
-      jsArray {
-        a.foreach(jsString)
-        a.nonEmpty
+      appendArray {
+        a.foreach(append)
       }
     }
   }
@@ -39,5 +39,3 @@ trait Implicits {
   implicit def buildJson_TypeMetadata[A](implicit b: BuildJson[A]) =
     new impl.TypeMetadataBuildJsonImpl[A]()
 }
-
-object Implicits extends Implicits

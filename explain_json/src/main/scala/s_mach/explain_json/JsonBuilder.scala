@@ -19,41 +19,87 @@
 package s_mach.explain_json
 
 /**
-  * A base trait for serializing to a JSON representation
+  * A builder that accepts commands to build a serialized
+  * JSON representation
+  *
   * Note: not thread safe
   * 
-  * @tparam JsonRepr type of JSON representation
+  * @tparam JsonRepr type of JSON representation being built (e.g. String)
   */
 trait JsonBuilder[JsonRepr] {
-  // primitives
-  def jsBoolean(value: Boolean) : Unit
-  def jsNumber(value: BigDecimal) : Unit
-  def jsString(value: String) : Unit
-  def jsNull() : Unit
-
-  // complex values
-  def jsObject[A](build: => A) : A
-  def jsField[A](fieldName: String)(build: => A) : A
-  def jsArray[A](build: => A) : A
+  /**
+    * @param value JSON boolean value to append to builder
+    */
+  def append(value: Boolean) : Unit
+  /**
+    * @param value JSON number value to append to builder
+    */
+  def append(value: BigDecimal) : Unit
+  /**
+    * @param value JSON string value to append to builder
+    */
+  def append(value: String) : Unit
+  /**
+    * Append JSON null value to builder
+    */
+  def append(_null: Null) : Unit
 
   /**
-    * Saves the current state of the builder and then runs the build function.
-    * If the build function returns FALSE then the saved state is restored
-    * effectively undoing any build commands issued by the build function.
-    *
-    * @param build invokes build commands. May return FALSE to revert to the builder
-    *              state before
+    * Append a JSON object to the builder.
+    * @param buildFields build commands for the fields of the object
+    * @tparam A return type
     * @return value returned by build function
     */
-  def buildIf(build: => Boolean) : Boolean
+  def appendObject[A](buildFields: => A) : A
 
-  def buildIfOrElse(build: => Boolean)(orElse: => Unit) : Boolean =
-    if(buildIf(build)) {
-      true
-    } else {
-      orElse
-      false
-    }
+  /**
+    * Append a JSON field to the current object being built
+    * by the builder.
+    * @param buildFieldValue build commands for value of the field
+    * @tparam A return type
+    * @return value returned by build function
+    */
+  def appendField[A](fieldName: String)(buildFieldValue: => A) : A
 
+  /**
+    * Append a JSON array to the builder. The members of
+    * the array are determined by the commands issued by
+    * the build function.
+    * @param buildMembers build commands for members of the array
+    * @tparam A return type
+    * @return value returned by build function
+    */
+  def appendArray[A](buildMembers: => A) : A
+
+  /** JSON representation of null */
+  def lastIsNull : Boolean
+  /** JSON representation of an empty object */
+  def lastIsEmptyObject : Boolean
+  /** JSON representation of an empty array */
+  def lastIsEmptyArray : Boolean
+  /** JSON representation of an empty string */
+  def lastIsEmptyString : Boolean
+
+  def lastIsEmpty : Boolean =
+    lastIsNull ||
+    lastIsEmptyArray ||
+    lastIsEmptyObject ||
+    lastIsEmptyString
+
+  type SavedState
+
+  /**
+    * @return the current state of the builder
+    */
+  def save() : SavedState
+  /**
+    * Restore a previously saved state of the builder
+    */
+  def restore(prevState: SavedState) : Unit
+
+  /**
+    * Builds the final JSON representation
+    * @return
+    */
   def build() : JsonRepr
 }

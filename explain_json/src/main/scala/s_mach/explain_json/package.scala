@@ -26,11 +26,18 @@ package object explain_json extends Implicits {
   type JsonExplanation = TypeMetadata[JsonExplanationNode]
 
   implicit class S_Mach_Explain_Json_EverythingPML[A](val self: A) extends AnyVal {
+    /**
+      * Issue build commands to a builder to serialize self to a JSON value
+      * @param builder builder to issue comands to
+      * @param b type-class for building A
+      * @tparam JsonRepr type of JSON value
+      * @return TRUE if built JSON value is empty array, empty object or null
+      */
     def buildJson[JsonRepr](
       builder: JsonBuilder[JsonRepr]
     )(implicit
       b: BuildJson[A]
-    ) : Boolean =
+    ) : Unit =
       b.build(builder,self)
 
     def printJson[JsonRepr](implicit

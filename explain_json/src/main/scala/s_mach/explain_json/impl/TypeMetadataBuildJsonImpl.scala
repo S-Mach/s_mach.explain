@@ -25,56 +25,68 @@ class TypeMetadataBuildJsonImpl[A](implicit
   buildVal: BuildJson[A]
 ) extends BuildJson[TypeMetadata[A]] {
 
-  def build(builder: JsonBuilder[_], a: TypeMetadata[A]) = {
+  def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: TypeMetadata[A]) = {
     import builder._
 
     val _buildVal = buildVal.build(builder,_:A)
+    def pruneIfEmpty(build: => Unit) : Boolean = {
+      val saved = save()
+      build
+      if(lastIsEmpty) {
+        restore(saved)
+        true
+      } else {
+        false
+      }
+    }
 
-    def loop : TypeMetadata[A] => Boolean = {
+    def loop : TypeMetadata[A] => Unit = {
       case TypeMetadata.Val(value) =>
+        pruneIfEmpty {
           _buildVal(value)
+        }
+        ()
 
       case TypeMetadata.Arr(value,Cardinality.ZeroOrOne,members) =>
         loop(members)
 
       case TypeMetadata.Arr(value,cardinality,membersTypeMetadata) =>
-        jsObject {
-          val hasThis = buildIf {
-            jsField("this") {
-              _buildVal(value)
+        pruneIfEmpty {
+          appendObject {
+            pruneIfEmpty {
+              appendField("this") {
+                _buildVal(value)
+              }
+            }
+            pruneIfEmpty {
+              appendField("*") {
+                loop(membersTypeMetadata)
+              }
             }
           }
-          val hasMemberType = buildIf {
-            jsField("*") {
-              loop(membersTypeMetadata)
-            }
-          }
-          hasThis || hasMemberType
+          ()
         }
+        ()
 
       case r@TypeMetadata.Rec(value,_) =>
-        jsObject {
-          val hasThis = buildIf {
-            jsField("this") {
+        appendObject {
+          pruneIfEmpty {
+            appendField("this") {
               _buildVal(value)
             }
           }
-          val hasFields =
-            r.fieldToTypeMetadata.foldLeft(false) { case (acc,(field, fieldTypeMetadata)) =>
-              buildIf {
-                jsField(field) {
-                  loop(fieldTypeMetadata)
-                }
-              } || acc
+          r.fieldToTypeMetadata.foreach { case (field, fieldTypeMetadata) =>
+            pruneIfEmpty {
+              appendField(field) {
+                loop(fieldTypeMetadata)
+              }
             }
-          hasThis || hasFields
+          }
         }
     }
 
-    buildIfOrElse(
-      loop(a)
-    ) {
-      jsNull()
+    if(pruneIfEmpty(loop(a))) {
+      append(null)
     }
   }
 

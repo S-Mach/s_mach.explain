@@ -18,6 +18,16 @@
 */
 package s_mach.explain_json
 
+/**
+  * A type-class for building the serialized JSON that represents
+  * a value of type A
+  * @tparam A type serialized to JSON
+  */
 trait BuildJson[A] {
-  def build(builder: JsonBuilder[_], a: A) : Boolean
+  /**
+    * Issue build commands for serializing a value to JSON
+    * @param builder builder to issue commands to
+    * @param a value to serialize
+    */
+  def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: A) : Unit
 }

@@ -19,7 +19,7 @@
 package s_mach.explain_json.impl
 
 import s_mach.explain_json.JsonStringBuilder
-import scala.collection.mutable
+//import scala.collection.mutable
 
 /**
   * Efficient JsonBuilder for String. Performs no validation.
@@ -28,9 +28,11 @@ import scala.collection.mutable
   */
 class JsonStringBuilderImpl(initialBufferSize: Int = 256) extends JsonStringBuilder {
   val sb = new StringBuilder(initialBufferSize)
-  val positionStack = mutable.Stack[Int]()
+//  val positionStack = mutable.Stack[Int]()
+  var lastStartPos = -1
 
-  def jsBoolean(value: Boolean) = {
+  def append(value: Boolean) = {
+    lastStartPos = sb.length
     if(value) {
       sb.append("true,")
     } else {
@@ -39,55 +41,104 @@ class JsonStringBuilderImpl(initialBufferSize: Int = 256) extends JsonStringBuil
     ()
   }
 
-  def jsNumber(value: BigDecimal) = {
+  def append(value: BigDecimal) = {
+    lastStartPos = sb.length
     sb.append(value.toString())
     sb.append(',')
     ()
   }
 
-  def jsString(value: String) = {
+  def append(value: String) = {
+    lastStartPos = sb.length
     sb.append(s""""$value",""")
     ()
   }
 
-  def jsNull() = {
+  def append(n: Null) = {
+    lastStartPos = sb.length
     sb.append("null,")
     ()
   }
 
-  def jsArray[A](f: => A) = {
+  def appendArray[A](f: => A) = {
+    val pos = sb.length
     sb.append('[')
     val retv = f
-    // throw away last comma
-    sb.setLength(sb.length - 1)
+    if(pos + 1 < sb.length) {
+      // throw away last comma
+      sb.setLength(sb.length - 1)
+    }
     sb.append("],")
+    lastStartPos = pos
     retv
   }
 
-  def jsObject[A](f: => A) = {
+  def appendObject[A](f: => A) = {
+    val pos = sb.length
     sb.append('{')
     val retv = f
-    // throw away last comma
-    sb.setLength(sb.length - 1)
+    if(pos + 1 < sb.length) {
+      // throw away last comma
+      sb.setLength(sb.length - 1)
+    }
     sb.append("},")
+    lastStartPos = pos
     retv
   }
 
-  def jsField[A](fieldName: String)(build: => A) = {
+  def appendField[A](fieldName: String)(build: => A) = {
+    val pos = sb.length
     sb.append(s""""$fieldName":""")
-    build
+    val retv = build
+    lastStartPos = pos
+    retv
   }
 
 
-  def buildIf(f: => Boolean) = {
-    positionStack.push(sb.length)
-    if(f) {
-      positionStack.pop()
-      true
-    } else {
-      sb.setLength(positionStack.pop())
-      false
-    }
+  private[this] def last = if(lastStartPos > -1) {
+    sb.substring(lastStartPos,sb.length - 1)
+  } else {
+    ""
+  }
+
+//  def buildIf(f: => Boolean) = {
+//    positionStack.push(sb.length)
+//    if(f) {
+//      positionStack.pop()
+//      true
+//    } else {
+//      sb.setLength(positionStack.pop())
+//      false
+//    }
+//  }
+
+  /** JSON representation of null */
+  def lastIsNull = last == "null"
+
+  /** JSON representation of an empty array */
+  def lastIsEmptyArray = last == "[]"
+
+  /** JSON representation of an empty string */
+  def lastIsEmptyString = last == "\"\""
+
+  /** JSON representation of an empty object */
+  def lastIsEmptyObject = last == "{}"
+
+  //  def undo() = {
+//    if(lastStartPos > -1) {
+//      sb.setLength(lastStartPos)
+//      lastStartPos = -1
+//    } else {
+//      throw new NoSuchElementException
+//    }
+//  }
+
+  type SavedState = Int
+
+  def save() = sb.length
+
+  def restore(prevState: Int) = {
+    sb.setLength(prevState)
   }
 
   // throw away extra comma

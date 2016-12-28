@@ -18,7 +18,10 @@
 */
 package s_mach.explain_json
 
-
+/**
+  * A JSON builder that outputs a String containing JSON
+  * (with no whitespace)
+  */
 trait JsonStringBuilder extends JsonBuilder[String]
 
 object JsonStringBuilder {

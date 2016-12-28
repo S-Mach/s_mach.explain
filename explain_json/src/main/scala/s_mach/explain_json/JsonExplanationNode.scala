@@ -20,7 +20,7 @@ package s_mach.explain_json
 
 /**
  * A base trait for a node in a TypeMetadata tree that
- * represents the JSON for a data type
+ * represents the JSON schema for a data type
  */
 sealed trait JsonExplanationNode
 

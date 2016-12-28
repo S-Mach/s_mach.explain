@@ -43,34 +43,34 @@ object PrintJsonSchemaOps {
 
     rules.foreach {
       case Maximum(value, exclusive) =>
-        jsField("maximum") {
-          jsNumber(value)
+        appendField("maximum") {
+          append(value)
         }
         if(exclusive) {
-          jsField("exclusiveMaximum") {
-            jsBoolean(true)
+          appendField("exclusiveMaximum") {
+            append(true)
           }
         }
       case Minimum(value, exclusive) =>
-        jsField("minimum") {
-          jsNumber(value)
+        appendField("minimum") {
+          append(value)
         }
         if(exclusive) {
-          jsField("exclusiveMinimum") {
-            jsBoolean(true)
+          appendField("exclusiveMinimum") {
+            append(true)
           }
         }
       case StringMaxLength(value) =>
-        jsField("maxLength") {
-          jsNumber(value)
+        appendField("maxLength") {
+          append(value)
         }
       case StringMinLength(value) =>
-        jsField("minLength") {
-          jsNumber(value)
+        appendField("minLength") {
+          append(value)
         }
       case StringPattern(value) =>
-        jsField("pattern") {
-          jsString(value)
+        appendField("pattern") {
+          append(value)
         }
 //        case MaxItems(value) => ???
 //        case MinItems(value) => ???
@@ -85,10 +85,10 @@ object PrintJsonSchemaOps {
     import builder._
 
     if (additionalRules.nonEmpty) {
-      jsField("additionalRules") {
-        jsArray {
+      appendField("additionalRules") {
+        appendArray {
           additionalRules.foreach(rule =>
-            jsString(rule)
+            append(rule)
           )
         }
       }
@@ -103,9 +103,9 @@ object PrintJsonSchemaOps {
     import builder._
 
     if (comments.nonEmpty) {
-      jsField("comments") {
-        jsArray {
-          comments.foreach(jsString)
+      appendField("comments") {
+        appendArray {
+          comments.foreach(append)
         }
       }
     }
@@ -128,11 +128,11 @@ object PrintJsonSchemaOps {
     def loop(id: String, tm: JsonExplanation) : Unit = {
       tm match {
         case TypeMetadata.Val(value:JsonVal) =>
-          jsField("id") {
-            jsString(id)
+          appendField("id") {
+            append(id)
           }
-          jsField("type") {
-            jsString(JsonExplanationOps.printJsonType(value))
+          appendField("type") {
+            append(JsonExplanationOps.printJsonType(value))
           }
           maybeRules(value.rules)
           maybeAdditionalRules(value.additionalRules)
@@ -143,20 +143,20 @@ object PrintJsonSchemaOps {
         // Emit nothing for Option and recurse on A
         // JsonType for A will be marked optional
         case TypeMetadata.Arr(_,Cardinality.ZeroOrOne,member) =>
-          jsField("id") {
-            jsString(id)
+          appendField("id") {
+            append(id)
           }
           loop(id,member)
         case TypeMetadata.Arr(value:JsonArray,cardinality,members) =>
-          jsField("id") {
-            jsString(id)
+          appendField("id") {
+            append(id)
           }
-          jsField("type") {
-            jsString("array")
+          appendField("type") {
+            append("array")
           }
           import Cardinality._
-          jsField("minItems") {
-            jsNumber {
+          appendField("minItems") {
+            append {
               cardinality match {
                 case ZeroOrMore => 0
                 case ZeroOrOne => 0
@@ -168,54 +168,54 @@ object PrintJsonSchemaOps {
           cardinality match {
             case ZeroOrMore =>
             case ZeroOrOne =>
-              jsField("maxItems") {
-                jsNumber(1)
+              appendField("maxItems") {
+                append(1)
               }
             case OneOrMore =>
             case MinMax(_,max) =>
-              jsField("maxItems") {
-                jsNumber(max)
+              appendField("maxItems") {
+                append(max)
               }
           }
-          jsField("uniqueItems") {
-            jsBoolean(false)
+          appendField("uniqueItems") {
+            append(false)
           }
-          jsField("additionalItems") {
-            jsBoolean(false)
+          appendField("additionalItems") {
+            append(false)
           }
-          jsField("items") {
-            jsObject {
+          appendField("items") {
+            appendObject {
               loop(s"$id/1", members)
             }
           }
           maybeAdditionalRules(value.additionalRules)
           maybeComments(value.comments)
         case r@TypeMetadata.Rec(value:JsonObject,_) =>
-          jsField("id") {
-            jsString(id)
+          appendField("id") {
+            append(id)
           }
-          jsField("type") {
-            jsString("object")
+          appendField("type") {
+            append("object")
           }
-          jsField("properties") {
-            jsObject {
+          appendField("properties") {
+            appendObject {
               r.fields.foreach { case (field, tm) =>
-                jsField(field) {
-                  jsObject {
+                appendField(field) {
+                  appendObject {
                     loop(s"$id/$field", tm)
                   }
                 }
               }
             }
           }
-          jsField("additionalProperties") {
-            jsBoolean(true)
+          appendField("additionalProperties") {
+            append(true)
           }
-          jsField("required") {
-            jsArray {
+          appendField("required") {
+            appendArray {
               r.fields.foreach { case t@(f, _) =>
                 if (isOptionalField(t) == false) {
-                  jsString(f)
+                  append(f)
                 }
               }
             }
@@ -227,9 +227,9 @@ object PrintJsonSchemaOps {
       }
     }
 
-    jsObject {
-      jsField("$schema") {
-        jsString("http://json-schema.org/draft-04/schema#")
+    appendObject {
+      appendField("$schema") {
+        append("http://json-schema.org/draft-04/schema#")
       }
       loop(id, head)
     }
