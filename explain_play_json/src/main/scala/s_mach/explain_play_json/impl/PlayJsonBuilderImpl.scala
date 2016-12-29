@@ -1,105 +1,49 @@
 package s_mach.explain_play_json.impl
 
 import play.api.libs.json._
+import s_mach.explain_json.JsonStringBuilder
 import s_mach.explain_play_json.PlayJsonBuilder
 
 class PlayJsonBuilderImpl extends PlayJsonBuilder {
-  var current : JsValue = JsNull
-  var currentField : String = ""
-//  var stack = mutable.Stack[(JsValue,String)]()
+  // Note: using immutable JsValues directly to construct JSON
+  // graph is both cludgy and inefficient. Instead using String
+  // to quickly accumulate JSON then Json.parse to convert String
+  // JSON to JsValue graph. Also greatly simplifies save/restore
+  val jsb = JsonStringBuilder(1024)
 
-  private[this] def setVal(js: JsValue) : Unit = {
-    current =
-      current match {
-        case JsObject(fields) =>
-          JsObject(fields :+ (currentField -> js))
-        case JsArray(members) =>
-          JsArray(members :+ js)
-        case _ => js
-      }
-  }
+  def append(value: Boolean) = jsb.append(value)
 
-  def append(value: Boolean) = {
-    setVal(JsBoolean(value))
-  }
-  def append(value: BigDecimal) = {
-    setVal(JsNumber(value))
-  }
-  def append(value: String) = {
-    setVal(JsString(value))
-  }
-  def append(value: Int) = {
-    setVal(JsNumber(value))
-  }
-  def append(n: Null) = {
-    setVal(JsNull)
-  }
+  def append(value: Int) = jsb.append(value)
 
-  def appendObject[A](build: => A) = {
-    val prev = current
-    setVal(JsObject(Seq.empty))
-    val retv = build
-    current = prev
-    retv
-  }
+  def append(value: Long) = jsb.append(value)
 
-  def appendArray[A](build: => A) = {
-    val prev = current
-    setVal(JsArray(Seq.empty))
-    val retv = build
-    current = prev
-    retv
-  }
+  def append(value: BigDecimal) = jsb.append(value)
 
-  def appendField[A](fieldName: String)(build: => A) = {
-    val prev = currentField
-    currentField = fieldName
-    val retv = build
-    currentField = prev
-    retv
-  }
+  def append(value: String) = jsb.append(value)
 
+  def append(_null: Null) = jsb.append(_null)
 
-//  def buildIf(build: => Boolean) = {
-//    stack.push((current,currentField))
-//    if(build) {
-//      stack.pop()
-//      true
-//    } else {
-//      val (prevCurrent,prevCurrentField) = stack.pop()
-//      current = prevCurrent
-//      currentField = prevCurrentField
-//      false
-//    }
-//  }
+  def appendObject[A](buildFields: =>A) = jsb.appendObject(buildFields)
 
-  /** JSON representation of null */
-  def lastIsNull = current == JsNull
+  def appendField[A](fieldName: String)(buildFieldValue: => A) =
+    jsb.appendField(fieldName)(buildFieldValue)
 
-  /** JSON representation of an empty string */
-  def lastIsEmptyString = current match {
-    case JsString(value) if value.isEmpty => true
-    case _ => false
-  }
+  def appendArray[A](buildMembers: =>A) =
+    jsb.appendArray(buildMembers)
 
-  /** JSON representation of an empty array */
-  def lastIsEmptyArray = current match {
-    case JsArray(members) if members.isEmpty => true
-    case _ => false
-  }
+  def lastIsNull = jsb.lastIsNull
 
-  /** JSON representation of an empty object */
-  def lastIsEmptyObject = current match {
-    case JsObject(fields) if fields.isEmpty => true
-    case _ => false
-  }
+  def lastIsEmptyArray = jsb.lastIsEmptyArray
 
-  type SavedState = JsValue
+  def lastIsEmptyString = jsb.lastIsEmptyString
 
-  def save() = current
+  def lastIsEmptyObject = jsb.lastIsEmptyObject
 
-  def restore(prevState: SavedState) =
-    current = prevState
+  type SavedState = jsb.SavedState
 
-  def build() = current
+  def save() = jsb.save()
+
+  def restore(prevState: SavedState) = jsb.restore(prevState)
+
+  def build() = Json.parse(jsb.build())
 }

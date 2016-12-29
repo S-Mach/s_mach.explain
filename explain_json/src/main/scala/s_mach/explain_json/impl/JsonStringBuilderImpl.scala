@@ -19,7 +19,6 @@
 package s_mach.explain_json.impl
 
 import s_mach.explain_json.JsonStringBuilder
-//import scala.collection.mutable
 
 /**
   * Efficient JsonBuilder for String. Performs no validation.
@@ -28,7 +27,6 @@ import s_mach.explain_json.JsonStringBuilder
   */
 class JsonStringBuilderImpl(initialBufferSize: Int = 256) extends JsonStringBuilder {
   val sb = new StringBuilder(initialBufferSize)
-//  val positionStack = mutable.Stack[Int]()
   var lastStartPos = -1
 
   def append(value: Boolean) = {
@@ -38,6 +36,20 @@ class JsonStringBuilderImpl(initialBufferSize: Int = 256) extends JsonStringBuil
     } else {
       sb.append("false,")
     }
+    ()
+  }
+
+  def append(value: Int) = {
+    lastStartPos = sb.length
+    sb.append(value)
+    sb.append(',')
+    ()
+  }
+
+  def append(value: Long) = {
+    lastStartPos = sb.length
+    sb.append(value)
+    sb.append(',')
     ()
   }
 
@@ -101,17 +113,6 @@ class JsonStringBuilderImpl(initialBufferSize: Int = 256) extends JsonStringBuil
     ""
   }
 
-//  def buildIf(f: => Boolean) = {
-//    positionStack.push(sb.length)
-//    if(f) {
-//      positionStack.pop()
-//      true
-//    } else {
-//      sb.setLength(positionStack.pop())
-//      false
-//    }
-//  }
-
   /** JSON representation of null */
   def lastIsNull = last == "null"
 
@@ -123,15 +124,6 @@ class JsonStringBuilderImpl(initialBufferSize: Int = 256) extends JsonStringBuil
 
   /** JSON representation of an empty object */
   def lastIsEmptyObject = last == "{}"
-
-  //  def undo() = {
-//    if(lastStartPos > -1) {
-//      sb.setLength(lastStartPos)
-//      lastStartPos = -1
-//    } else {
-//      throw new NoSuchElementException
-//    }
-//  }
 
   type SavedState = Int
 

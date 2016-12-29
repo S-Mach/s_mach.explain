@@ -33,6 +33,28 @@ trait Implicits {
     }
   }
 
+  implicit def buildJson_MapStringA[A](implicit buildJson: BuildJson[A]) = new BuildJson[Map[String,A]] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Map[String, A]) = {
+      import builder._
+      appendObject {
+        a.foreach { case (key,value) =>
+          appendField(key) {
+            value.buildJson(builder)
+          }
+        }
+      }
+    }
+  }
+
+  implicit def buildJson_SeqA[A](implicit buildJson: BuildJson[A]) = new BuildJson[Seq[A]] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Seq[A]) = {
+      import builder._
+      appendArray {
+        a.foreach(_.buildJson(builder))
+      }
+    }
+  }
+
   implicit def buildJson_Metadata[A](implicit b: BuildJson[A]) =
     new impl.MetadataBuildJsonImpl[A]()
 

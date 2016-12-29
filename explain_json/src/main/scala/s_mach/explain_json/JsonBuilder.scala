@@ -34,6 +34,14 @@ trait JsonBuilder[JsonRepr] {
   /**
     * @param value JSON number value to append to builder
     */
+  def append(value: Int) : Unit
+  /**
+    * @param value JSON number value to append to builder
+    */
+  def append(value: Long) : Unit
+  /**
+    * @param value JSON number value to append to builder
+    */
   def append(value: BigDecimal) : Unit
   /**
     * @param value JSON string value to append to builder
