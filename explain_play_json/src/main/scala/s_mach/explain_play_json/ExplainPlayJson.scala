@@ -20,7 +20,6 @@ package s_mach.explain_play_json
 
 
 import scala.language.experimental.macros
-import scala.language.higherKinds
 import scala.reflect.macros.blackbox
 import s_mach.codetools.IsValueClass
 import s_mach.codetools.macros.ProductBuilder
@@ -32,19 +31,42 @@ import s_mach.i18n.I18NConfig
  * Type-class to fetch remarks to explain a Play JSON Format
  * */
 trait ExplainPlayJson[A] {
+  /** @return a general purpose JSON schema that can be converted to
+    * human-readable remarks, JSONSchema or other outputs */
   def explain(implicit i18ncfg: I18NConfig) : JsonExplanation
 }
 
 object ExplainPlayJson {
-  def apply[A](implicit e: ExplainPlayJson[A]) = e
-
+  /**
+    * Create an ExplainPlayJson type-class for a type from a function that
+    * accepts i18n configuration.
+    *
+    * @param f function that accepts i18n config and returns a JSON explanation
+    * @tparam A type explained
+    * @return ExplainPlayJson[A] type-class
+    */
   def apply[A](f: I18NConfig => JsonExplanation) : ExplainPlayJson[A] =
     ExplainPlayJsonOps.ExplainPlayJsonImpl(f)
 
+  /**
+    * Create an ExplainPlayJson type-class for a type that doesn't require
+    * i18n configuration.
+    *
+    * @param explain explanation for the type
+    * @tparam A type explained
+    * @return ExplainPlayJson[A] type-class
+    */
   def materialized[A](explain: JsonExplanation) : ExplainPlayJson[A] =
     ExplainPlayJsonOps.MaterializedExplainPlayJson(explain)
 
-  def builder[A] : ProductBuilder[ExplainPlayJson,A] =
+  /**
+    * A product builder for manually creating an ExplainPlayJson type-class
+    * from the fields of the type.
+    *
+    * @tparam A type explained
+    * @return ExplainPlayJson[A] type-class
+    */
+  def productBuilder[A] : ProductBuilder[ExplainPlayJson,A] =
     ExplainPlayJsonForProduct[A]()
 
   /** @return an ExplainPlayJson for a value */
@@ -72,14 +94,6 @@ object ExplainPlayJson {
     val builder = new ExplainPlayJsonMacroBuilder(c)
     builder.build[A]().asInstanceOf[c.Expr[ExplainPlayJson[A]]]
   }
-
-  implicit def forOption[A](implicit
-    ea: ExplainPlayJson[A]
-  ) : ExplainPlayJson[Option[A]] = ExplainPlayJsonOps.forOption
-
-  implicit def forTraversable[M[AA] <: Traversable[AA],A](implicit
-    ea: ExplainPlayJson[A]
-  ) : ExplainPlayJson[M[A]] = ExplainPlayJsonOps.forTraversable
 
 }
 

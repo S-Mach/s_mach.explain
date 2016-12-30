@@ -27,7 +27,7 @@ package object explain_json extends Implicits {
 
   implicit class S_Mach_Explain_Json_EverythingPML[A](val self: A) extends AnyVal {
     /**
-      * Issue build commands to a builder to serialize self to a JSON value
+      * Issue JSON build commands to a JSON builder
       * @param builder builder to issue comands to
       * @param b type-class for building A
       * @tparam JsonRepr type of JSON value
@@ -40,6 +40,13 @@ package object explain_json extends Implicits {
     ) : Unit =
       b.build(builder,self)
 
+    /**
+      * Issue build commands to a JSON builder and build JSON representation
+      * @param jbf type-class for creating a default configured builder
+      * @param b type-class for building A
+      * @tparam JsonRepr type of JSON value
+      * @return JSON representation
+      */
     def printJson[JsonRepr](implicit
       jbf:JsonBuilderFactory[JsonRepr],
       b: BuildJson[A]
@@ -51,7 +58,7 @@ package object explain_json extends Implicits {
   }
 
   implicit class S_Mach_Explain_Json_TypeMetadataExplainJsonNodePML(val self: JsonExplanation) extends AnyVal {
-    /** @return print remarks for JSONExplanation */
+    /** @return print human-readable remarks for JSONExplanation */
     def printRemarks(implicit
       cfg: I18NConfig
     ) : TypeRemarks =

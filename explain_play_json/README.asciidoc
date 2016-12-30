@@ -6,8 +6,8 @@ v1,16-Feb-16
 
 Scaladocs: http://s-mach.github.io/s_mach.explain/explain_play_json/2.11.x/[2.11]
 
-+s_mach.explain_play_json+ is an open-source Scala library for generating a JSONSchema or a human-readable explanation for
-Play-framework JSON serializers.
++s_mach.explain_play_json+ is an open-source Scala library for generating a JSONSchema or a human-readable explanation
+for Play-framework JSON data and data types.
 
 == Include in SBT
 1. Add to +build.sbt+

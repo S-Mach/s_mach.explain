@@ -48,13 +48,6 @@ case class ExplainPlayJsonForProduct[A](
     )
   }
 
-  /*
-   Note: could override and here for efficiently combining product validators
-   with other product validators. However, most product validators will be
-   macro generated and can't be combined like this. So implementing this would
-   be a wasted effort.
-    */
-
   def build() = ExplainPlayJson { implicit i18ncfg =>
     TypeMetadata.Rec[JsonExplanationNode](
       JsonExplanationNode.JsonObject(),

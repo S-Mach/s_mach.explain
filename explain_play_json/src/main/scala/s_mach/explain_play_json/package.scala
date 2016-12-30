@@ -19,19 +19,18 @@
 package s_mach
 
 import s_mach.i18n.I18NConfig
+import s_mach.explain_json._
 
 package object explain_play_json extends ExplainPlayJsonImplicits {
-
-  /*
-  Note: putting this in ExplainPlayJsonImplicits result in error:
-[error] /Users/lancegatlin/Code/s_mach.explain_play_json/src/test/scala/s_mach/explain_play_json/ExampleUsage.scala:45: reference to explainPlayJson is ambiguous;
-[error] it is both defined in trait ExplainPlayJsonImplicits and imported subsequently by
-[error] import s_mach.explain_play_json._
-[error]   explainPlayJson[Person].explain.printJsonSchema[JsValue]("http://test.org").pretty
-[error]   ^
-   */
+  /**
+    * Get the Play JsonExplanation for a type
+    * @param e implicit ExplainPlayJson type-class for the type
+    * @param i18ncfg i18n configuration
+    * @tparam A type to explain
+    * @return Play JsonExplanation for the type
+    */
   def explainPlayJson[A](implicit
     e: ExplainPlayJson[A],
     i18ncfg: I18NConfig
-  ) = e.explain
+  ) : JsonExplanation = e.explain
 }

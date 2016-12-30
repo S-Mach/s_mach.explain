@@ -18,9 +18,11 @@
 */
 package s_mach.explain_play_json
 
+import scala.language.higherKinds
 import play.api.libs.json.JsValue
 import s_mach.explain_json.JsonBuilderFactory
 import s_mach.explain_json.JsonExplanationNode._
+import s_mach.explain_play_json.impl.ExplainPlayJsonOps
 
 object ExplainPlayJsonImplicits extends ExplainPlayJsonImplicits
 trait ExplainPlayJsonImplicits {
@@ -40,4 +42,12 @@ trait ExplainPlayJsonImplicits {
   implicit object JsonBuilderFactory_JsValue extends JsonBuilderFactory[JsValue] {
     def apply() = PlayJsonBuilder()
   }
+
+  implicit def forOption[A](implicit
+    ea: ExplainPlayJson[A]
+  ) : ExplainPlayJson[Option[A]] = ExplainPlayJsonOps.forOption
+
+  implicit def forTraversable[M[AA] <: Traversable[AA],A](implicit
+    ea: ExplainPlayJson[A]
+  ) : ExplainPlayJson[M[A]] = ExplainPlayJsonOps.forTraversable
 }

@@ -25,7 +25,7 @@ object ExampleBuilderUsage {
     last: String
   )
   implicit val explainJson_Name =
-    ExplainPlayJson.builder[Name]
+    ExplainPlayJson.productBuilder[Name]
       .field("first",_.first)()
       .field("middle",_.middle)()
       .field("last",_.last)()
@@ -37,7 +37,7 @@ object ExampleBuilderUsage {
     friendIds: List[Int]
   )
   implicit val explainJson_Person =
-    ExplainPlayJson.builder[Person]
+    ExplainPlayJson.productBuilder[Person]
       .field("name",_.name)()
       .field("age",_.age)()
       .field("friendIds",_.friendIds)()

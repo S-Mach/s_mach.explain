@@ -20,7 +20,7 @@ package s_mach.explain_json
 
 /**
   * A type-class for building an already configured instance
-  * of a JsonBuilder
+  * of a JsonBuilder for a JSON representation
   * @tparam JsonRepr type of the JSON representation (e.g. String)
   */
 trait JsonBuilderFactory[JsonRepr] {

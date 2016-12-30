@@ -79,15 +79,16 @@ trait JsonBuilder[JsonRepr] {
     */
   def appendArray[A](buildMembers: => A) : A
 
-  /** JSON representation of null */
+  /** @return TRUE if last JSON value appends was null */
   def lastIsNull : Boolean
-  /** JSON representation of an empty object */
+  /** @return TRUE if last JSON value appends was an empty object */
   def lastIsEmptyObject : Boolean
-  /** JSON representation of an empty array */
+  /** @return TRUE if last JSON value appends was an empty array */
   def lastIsEmptyArray : Boolean
-  /** JSON representation of an empty string */
+  /** @return TRUE if last JSON value appends was an empty string */
   def lastIsEmptyString : Boolean
-
+  /** @return TRUE if last JSON value appends was null, an empty object, an empty
+    *         array or an empty string */
   def lastIsEmpty : Boolean =
     lastIsNull ||
     lastIsEmptyArray ||
