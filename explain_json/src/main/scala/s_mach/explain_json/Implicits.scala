@@ -18,18 +18,65 @@
 */
 package s_mach.explain_json
 
+import scala.language.higherKinds
+
 object Implicits extends Implicits
 trait Implicits {
   implicit object JsonStringBuilderFactory extends JsonBuilderFactory[String] {
     def apply() = JsonStringBuilder(1024)
   }
 
-  implicit object buildJson_ListString extends BuildJson[List[String]] {
-    def build[R](builder: JsonBuilder[R], a: List[String]) = {
-      import builder._
-      appendArray {
-        a.foreach(append)
-      }
+  implicit object buildJson_Byte extends BuildJson[Byte] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Byte) = {
+      builder.append(a.toInt)
+    }
+  }
+
+  implicit object buildJson_Short extends BuildJson[Short] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Short) = {
+      builder.append(a.toInt)
+    }
+  }
+
+  implicit object buildJson_Int extends BuildJson[Int] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Int) = {
+      builder.append(a)
+    }
+  }
+
+  implicit object buildJson_Long extends BuildJson[Long] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Long) = {
+      builder.append(a)
+    }
+  }
+
+  implicit object buildJson_Float extends BuildJson[Float] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Float) = {
+      builder.append(a.toDouble)
+    }
+  }
+
+  implicit object buildJson_Double extends BuildJson[Double] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Double) = {
+      builder.append(a)
+    }
+  }
+
+  implicit object buildJson_BigInt extends BuildJson[BigInt] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: BigInt) = {
+      builder.append(BigDecimal(a))
+    }
+  }
+
+  implicit object buildJson_BigDecimal extends BuildJson[BigDecimal] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: BigDecimal) = {
+      builder.append(a)
+    }
+  }
+
+  implicit object buildJson_String extends BuildJson[String] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: String) = {
+      builder.append(a)
     }
   }
 
@@ -46,8 +93,8 @@ trait Implicits {
     }
   }
 
-  implicit def buildJson_SeqA[A](implicit buildJson: BuildJson[A]) = new BuildJson[Seq[A]] {
-    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: Seq[A]) = {
+  implicit def buildJson_SeqA[M[AA] <: Seq[AA], A](implicit buildJson: BuildJson[A]) = new BuildJson[M[A]] {
+    def build[JsonRepr](builder: JsonBuilder[JsonRepr], a: M[A]) = {
       import builder._
       appendArray {
         a.foreach(_.buildJson(builder))

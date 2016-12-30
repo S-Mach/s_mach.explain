@@ -19,7 +19,7 @@
 package s_mach.explain_json.impl
 
 import s_mach.explain_json._
-import s_mach.metadata.Metadata
+import s_mach.metadata.{Cardinality, Metadata}
 
 class MetadataBuildJsonImpl[A](implicit
   buildVal: BuildJson[A]
@@ -43,6 +43,11 @@ class MetadataBuildJsonImpl[A](implicit
     def loop : Metadata[A] => Unit = {
       case Metadata.Val(value) =>
         _buildVal(value)
+
+      case a@Metadata.Arr(value,Cardinality.ZeroOrOne,_) =>
+        a.indexToMetadata.foreach { case (index, memberMetadata) =>
+          loop(memberMetadata)
+        }
 
       case a@Metadata.Arr(value,cardinality,_) =>
         appendObject {

@@ -99,8 +99,8 @@ class JsonStringBuilderImpl(initialBufferSize: Int = 256) extends JsonStringBuil
   }
 
   def appendField[A](fieldName: String)(build: => A) = {
-    val pos = sb.length
     sb.append(s""""$fieldName":""")
+    val pos = sb.length
     val retv = build
     lastStartPos = pos
     retv

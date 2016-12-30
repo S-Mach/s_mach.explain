@@ -42,12 +42,11 @@ class TypeMetadataBuildJsonImpl[A](implicit
 
     def loop : TypeMetadata[A] => Unit = {
       case TypeMetadata.Val(value) =>
-        pruneIfEmpty {
-          _buildVal(value)
-        }
-        ()
+        _buildVal(value)
 
       case TypeMetadata.Arr(value,Cardinality.ZeroOrOne,members) =>
+        // Note: arrays with cardinality of zero or one are treated
+        // as normal fields
         loop(members)
 
       case TypeMetadata.Arr(value,cardinality,membersTypeMetadata) =>

@@ -6,7 +6,7 @@ import s_mach.explain_play_json.PlayJsonBuilder
 
 class PlayJsonBuilderImpl extends PlayJsonBuilder {
   // Note: using immutable JsValues directly to construct JSON
-  // graph is both cludgy and inefficient. Instead using String
+  // graph is both clumsy and inefficient. Instead using String
   // to quickly accumulate JSON then Json.parse to convert String
   // JSON to JsValue graph. Also greatly simplifies save/restore
   val jsb = JsonStringBuilder(1024)
