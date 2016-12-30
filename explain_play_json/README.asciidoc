@@ -39,15 +39,18 @@ guarantees are made as to the stability or interface of code in the
 == Examples
 
 ----
-Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
-Type in expressions to have them evaluated.
-Type :help for more information.
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_77).
+Type in expressions for evaluation. Or try :help.
 
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
+  import java.util.Locale
+  import s_mach.i18n._
+  implicit val i18ncfg = I18NConfig(Locale.US)
+  import play.api.libs.json.JsValue
   import s_mach.codetools.play_json._
-  import s_mach.explain_play_json.PlayJsonWriter.Implicits.playJsonWriter
+  import s_mach.explain_json._
   import s_mach.explain_play_json._
 
   case class Name(
@@ -69,15 +72,19 @@ scala> :paste
 
 // Exiting paste mode, now interpreting.
 
+import java.util.Locale
+import s_mach.i18n._
+i18ncfg: s_mach.i18n.I18NConfig = I18NConfig(Messages(keys.size=30),StrictInterpolator,StrictMessageResolver,DefaultStdI18N)
+import play.api.libs.json.JsValue
 import s_mach.codetools.play_json._
-import s_mach.explain_play_json.PlayJsonWriter.Implicits.playJsonWriter
+import s_mach.explain_json._
 import s_mach.explain_play_json._
 defined class Name
-explainJson_Name: s_mach.explain_play_json.ExplainPlayJson[Name] = ExplainPlayJsonImpl(Rec(JsonObject(false,List(),List()),List((first,Val(JsonString(false,List(),List(),List()))), (middle,Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(),List())))), (last,Val(JsonString(false,List(),List(),List()))))))
+explainJson_Name: s_mach.explain_play_json.ExplainPlayJson[Name] = ExplainPlayJsonImpl(<function1>)
 defined class Person
-explainJson_Person: s_mach.explain_play_json.ExplainPlayJson[Person] = ExplainPlayJsonImpl(Rec(JsonObject(false,List(),List()),List((name,Rec(JsonObject(false,List(),List()),List((first,Val(JsonString(false,List(),List(),List()))), (middle,Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(...
+explainJson_Person: s_mach.explain_play_json.ExplainPlayJson[Person] = ExplainPlayJsonImpl(<function1>)
 
-scala> println(explainPlayJson[Person].explain.printJsonSchema("http://test.org").pretty)
+scala> println(explainPlayJson[Person].printJsonSchema[JsValue]("http://test.org").pretty)
 {
   "$schema" : "http://json-schema.org/draft-04/schema#",
   "id" : "http://test.org",
@@ -108,6 +115,7 @@ scala> println(explainPlayJson[Person].explain.printJsonSchema("http://test.org"
       "type" : "integer"
     },
     "friendIds" : {
+      "id" : "http://test.org/friendIds",
       "type" : "array",
       "minItems" : 0,
       "uniqueItems" : false,
@@ -122,7 +130,7 @@ scala> println(explainPlayJson[Person].explain.printJsonSchema("http://test.org"
   "required" : [ "name", "age", "friendIds" ]
 }
 
-scala> explainPlayJson[Person].printRemarksJson.pretty
+scala> explainPlayJson[Person].printRemarks.printJson[JsValue].pretty
 res1: String =
 {
   "name" : {
@@ -137,14 +145,8 @@ res1: String =
   }
 }
 
-scala> explainPlayJson[Person].printRemarks.print.foreach(println)
-name.first: must be string
-name.middle: must be string
-name.middle: optional
-name.last: must be string
-age: must be integer
-friendIds: must be array
-friendIds[*]: must be integer
+scala> explainPlayJson[Person].printRemarks
+res2: s_mach.metadata.TypeRemarks = Rec(List(),List((name,Rec(List(),List((first,Val(List(must be string))), (middle,Arr(List(),ZeroOrOne,Val(List(must be string, optional)))), (last,Val(List(must be string)))))), (age,Val(List(must be integer))), (friendIds,Arr(List(must be array),ZeroOrMore,Val(List(must be integer))))))
 
 scala>
 ----

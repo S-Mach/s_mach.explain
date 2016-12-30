@@ -18,9 +18,9 @@
 */
 package s_mach.explain_json.example
 
-import java.util.Locale
 
 object ExampleUsage {
+  import java.util.Locale
   import s_mach.i18n._
   implicit val i18ncfg = I18NConfig(Locale.US)
   import s_mach.explain_json.JsonExplanationNode._

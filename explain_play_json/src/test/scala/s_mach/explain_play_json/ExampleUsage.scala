@@ -18,14 +18,15 @@
 */
 package s_mach.explain_play_json
 
-import java.util.Locale
 
 object ExampleUsage {
+  import java.util.Locale
   import s_mach.i18n._
   implicit val i18ncfg = I18NConfig(Locale.US)
   import play.api.libs.json.JsValue
   import s_mach.codetools.play_json._
   import s_mach.explain_json._
+  import s_mach.explain_play_json._
 
   case class Name(
     first: String,

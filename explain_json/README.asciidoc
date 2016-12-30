@@ -36,19 +36,19 @@ guarantees are made as to the stability or interface of code in the
 == Example
 
 ----
-[info] Starting scala interpreter...
-[info]
-Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
-Type in expressions to have them evaluated.
-Type :help for more information.
+Welcome to Scala 2.12.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_77).
+Type in expressions for evaluation. Or try :help.
 
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
-  import s_mach.metadata._
-  import s_mach.explain_json._
+  import java.util.Locale
+  import s_mach.i18n._
+  implicit val i18ncfg = I18NConfig(Locale.US)
   import s_mach.explain_json.JsonExplanationNode._
-  import s_mach.explain_json.JsonWriter.Implicits.jsonStringWriter
+  import s_mach.explain_json._
+  import Util._
+  import s_mach.metadata._
 
   // Generator libraries will provide these mappings between built-in types and JSON types
   val jsonExplanation_String : JsonExplanation =
@@ -84,26 +84,19 @@ scala> :paste
 
 // Exiting paste mode, now interpreting.
 
-import s_mach.metadata._
-import s_mach.explain_json._
+import java.util.Locale
+import s_mach.i18n._
+i18ncfg: s_mach.i18n.I18NConfig = I18NConfig(Messages(keys.size=30),StrictInterpolator,StrictMessageResolver,DefaultStdI18N)
 import s_mach.explain_json.JsonExplanationNode._
-import s_mach.explain_json.JsonWriter.Implicits.jsonStringWriter
+import s_mach.explain_json._
+import Util._
+import s_mach.metadata._
 jsonExplanation_String: s_mach.explain_json.JsonExplanation = Val(JsonString(false,List(),List(),List()))
 jsonExplanation_Option_String: s_mach.explain_json.JsonExplanation = Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(),List())))
 defined class Name
-jsonExplanation_Name: s_mach.explain_json.JsonExplanation = Rec(JsonObject(false,List(),List()),List((first,Val(JsonString(false,List(),List(),List()))), (middle,Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(),List())))), (last,Val(JsonString(false,List(),List(),List())))))
-
-scala> :paste
-// Entering paste mode (ctrl-D to finish)
-
-  // Note: prettyJson is only used here as test dep for demo
-  // s_mach.explain_play_json provides actual impl
-  jsonExplanation_Name.printJsonSchema("http://test.org").prettyJson
-
-
-// Exiting paste mode, now interpreting.
-
-res1: String =
+jsonExplanation_Name: s_mach.explain_json.JsonExplanation = Rec(JsonObject(false,List(),List()),List((first,Val(JsonString(false,List(),List(),List()))), (middle,Arr(OptionMarker,ZeroOrOne,Val(JsonString(true,List(),List(),List())))), (last,Val(...
+scala> jsonExplanation_Name.printJsonSchema("http://test.org").prettyJson
+res0: String =
 {
   "$schema" : "http://json-schema.org/draft-04/schema#",
   "id" : "http://test.org",
@@ -126,8 +119,8 @@ res1: String =
   "required" : [ "first", "last" ]
 }
 
-scala> jsonExplanation_Name.printRemarksJson.prettyJson
-res2: String =
+scala> jsonExplanation_Name.printRemarks.printJson.prettyJson
+res1: String =
 {
   "first" : [ "must be string" ],
   "middle" : [ "must be string", "optional" ],
@@ -135,7 +128,7 @@ res2: String =
 }
 
 scala> jsonExplanation_Name.printRemarks.print
-res3: List[String] = List(first: must be string, middle: must be string, middle: optional, last: must be string)
+res2: List[String] = List(first: must be string, middle: must be string, middle: optional, last: must be string)
 
 scala>
 ----

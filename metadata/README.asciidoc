@@ -36,9 +36,8 @@ guarantees are made as to the stability or interface of code in the
 == Examples
 
 ----
-Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
-Type in expressions to have them evaluated.
-Type :help for more information.
+Welcome to Scala 2.12.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_77).
+Type in expressions for evaluation. Or try :help.
 
 scala> import s_mach.metadata._
 import s_mach.metadata._
@@ -46,28 +45,28 @@ import s_mach.metadata._
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
-val m : Metadata[List[String]] = Metadata.Rec(
-  value = List("invalid"),
-  fields = Seq(
-    "id" -> Metadata.Val(List("ok")),
-    "name" -> Metadata.Rec(
-      value = List("invalid"),
-      fields = Seq(
-        "first" -> Metadata.Val(List("ok")),
-        "last" -> Metadata.Val(List("invalid"))
-      )
-    ),
-    "friendIds" -> Metadata.Arr(
-      value = List("ok"),
-      cardinality = Cardinality.ZeroOrMore,
-      members = Seq(
-        Metadata.Val(List("ok")),
-        Metadata.Val(List("ok")),
-        Metadata.Val(List("invalid"))
+  val m : Metadata[List[String]] = Metadata.Rec(
+    value = List("invalid"),
+    fields = Seq(
+      "id" -> Metadata.Val(List("ok")),
+      "name" -> Metadata.Rec(
+        value = List("invalid"),
+        fields = Seq(
+          "first" -> Metadata.Val(List("ok")),
+          "last" -> Metadata.Val(List("invalid"))
+        )
+      ),
+      "friendIds" -> Metadata.Arr(
+        value = List("ok"),
+        cardinality = Cardinality.ZeroOrMore,
+        members = Seq(
+          Metadata.Val(List("ok")),
+          Metadata.Val(List("ok")),
+          Metadata.Val(List("invalid"))
+        )
       )
     )
   )
-)
 
 
 // Exiting paste mode, now interpreting.
@@ -88,24 +87,24 @@ friendIds[2]: invalid
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
-val tm : TypeMetadata[List[String]] = TypeMetadata.Rec(
-  value = List("id plus length(name) must be greater than 0"),
-  fields = Seq(
-    "id" -> TypeMetadata.Val(List("must be greater than 0")),
-    "name" -> TypeMetadata.Rec(
-      value = Nil,
-      fields = Seq(
-        "first" -> TypeMetadata.Val(List("must not be empty")),
-        "last" -> TypeMetadata.Val(List("must not be empty"))
+  val tm : TypeMetadata[List[String]] = TypeMetadata.Rec(
+    value = List("id plus length(name) must be greater than 0"),
+    fields = Seq(
+      "id" -> TypeMetadata.Val(List("must be greater than 0")),
+      "name" -> TypeMetadata.Rec(
+        value = Nil,
+        fields = Seq(
+          "first" -> TypeMetadata.Val(List("must not be empty")),
+          "last" -> TypeMetadata.Val(List("must not be empty"))
+        )
+      ),
+      "friendIds" -> TypeMetadata.Arr(
+        value = List("may contain zero or more members"),
+        cardinality = Cardinality.ZeroOrMore,
+        membersTypeMetadata = TypeMetadata.Val(List("must be greater than 0"))
       )
-    ),
-    "friendIds" -> TypeMetadata.Arr(
-      value = List("may contain zero or more members"),
-      cardinality = Cardinality.ZeroOrMore,
-      membersTypeMetadata = TypeMetadata.Val(List("must be greater than 0"))
     )
   )
-)
 
 
 // Exiting paste mode, now interpreting.
