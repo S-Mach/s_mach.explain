@@ -30,8 +30,7 @@ guarantees are made as to the stability or interface of code in the
 
 == Features
 
-* Given a JsonExplanation (see https://github.com/S-Mach/s_mach.explain_play_json[+s_mach.explain_play_json+] for
-JsonExplanation generators for Play-framework JSON):
+* Given a JsonExplanation:
 ** Generate a JsonSchema (http://json-schema.org/)
 ** Generate human-readable remarks as a list of strings or as JSON
 
