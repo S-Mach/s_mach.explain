@@ -24,6 +24,7 @@ import s_mach.metadata._
 import s_mach.explain_json._
 import JsonExplanationNode._
 import s_mach.i18n.messages.BoundMessage
+import s_mach.string.CharGroupPattern
 
 object PrintJsonSchemaOps {
   private def isOptionalField(field: (String,JsonExplanation)) : Boolean = {
@@ -89,7 +90,7 @@ object PrintJsonSchemaOps {
       appendField("additionalRules") {
         appendArray {
           additionalRules.foreach(rule =>
-            append(rule(i18nconfig))
+            append(rule())
           )
         }
       }
@@ -108,13 +109,27 @@ object PrintJsonSchemaOps {
       appendField("comments") {
         appendArray {
           comments.foreach { comment =>
-            append(comment(i18nconfig))
+            append(comment())
           }
         }
       }
     }
   }
 
+  def commentsForRule(
+    rule: JsonRule
+  ) : List[BoundMessage] = {
+    rule match {
+      // Note: only need comments for StringPattern explanation of pattern
+      case JsonRule.StringPattern(value) =>
+          CharGroupPattern.unapplySeq(value).map { groups =>
+            BoundMessage { implicit cfg:I18NConfig =>
+              JsonExplanationOps.explainCharGroups(groups)
+            }
+          }.toList
+      case _ => Nil
+    }
+  }
 
   def printJsonSchema[JsonRepr](
     id: String,
@@ -125,15 +140,6 @@ object PrintJsonSchemaOps {
   ) : Unit = {
     implicit val _builder = builder
     import builder._
-
-    val commentsForRule =
-    { rule:JsonRule =>
-      { implicit cfg:I18NConfig =>
-        JsonExplanationOps.printJsonRuleRemark(rule)
-      }
-    }
-//      pjc.explainRule.lift.andThen(_.toList)
-//    val commentsForRule = { _:JsonRule => Nil }
 
     def loop(id: String, tm: JsonExplanation) : Unit = {
       tm match {
@@ -147,7 +153,7 @@ object PrintJsonSchemaOps {
           maybeRules(value.rules)
           maybeAdditionalRules(value.additionalRules)
           maybeComments(
-            value.comments ::: value.rules.map(commentsForRule)
+            value.comments ::: value.rules.flatMap(commentsForRule)
           )
         // Note: Option[A] isn't directly represented in JSON
         // Emit nothing for Option and recurse on A

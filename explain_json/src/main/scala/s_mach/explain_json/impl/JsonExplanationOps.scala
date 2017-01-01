@@ -127,8 +127,8 @@ object JsonExplanationOps {
             case _ => Nil
           }
         } :::
-        jst.additionalRules.map(_(cfg)) :::
-        jst.comments.map(_(cfg))
+        jst.additionalRules.map(_()) :::
+        jst.comments.map(_())
     }
   }
 
