@@ -18,6 +18,8 @@
 */
 package s_mach.explain_json
 
+import s_mach.i18n.messages.BoundMessage
+
 /**
  * A base trait for a node in a TypeMetadata tree that
  * represents the JSON schema for a data type
@@ -49,10 +51,10 @@ object JsonExplanationNode {
   sealed trait JsonType extends JsonExplanationNode {
     def isOptional: Boolean
     def isOptional(value: Boolean) : JsonType
-    def additionalRules: List[String]
-    def additionalRules(value: List[String]) : JsonType
-    def comments: List[String]
-    def comments(value: List[String]) : JsonType
+    def additionalRules: List[BoundMessage]
+    def additionalRules(value: List[BoundMessage]) : JsonType
+    def comments: List[BoundMessage]
+    def comments(value: List[BoundMessage]) : JsonType
   }
 
   /**
@@ -64,84 +66,84 @@ object JsonExplanationNode {
 
   case class JsonBoolean(
     isOptional: Boolean = false,
-    additionalRules: List[String] = Nil,
-    comments: List[String] = Nil
+    additionalRules: List[BoundMessage] = Nil,
+    comments: List[BoundMessage] = Nil
   ) extends JsonVal {
     def rules = Nil
 
     override def isOptional(value: Boolean) : JsonBoolean =
       copy(isOptional = value)
-    override def additionalRules(value: List[String]) : JsonBoolean =
+    override def additionalRules(value: List[BoundMessage]) : JsonBoolean =
       copy(additionalRules = value)
-    override def comments(value: List[String]) : JsonBoolean =
+    override def comments(value: List[BoundMessage]) : JsonBoolean =
       copy(comments = value)
   }
 
   case class JsonString(
     isOptional: Boolean = false,
     rules: List[JsonRule] = Nil,
-    additionalRules: List[String] = Nil,
-    comments: List[String] = Nil
+    additionalRules: List[BoundMessage] = Nil,
+    comments: List[BoundMessage] = Nil
   ) extends JsonVal {
     override def isOptional(value: Boolean) : JsonString =
       copy(isOptional = value)
-    override def additionalRules(value: List[String]) : JsonString =
+    override def additionalRules(value: List[BoundMessage]) : JsonString =
       copy(additionalRules = value)
-    override def comments(value: List[String]) : JsonString =
+    override def comments(value: List[BoundMessage]) : JsonString =
       copy(comments = value)
   }
 
   case class JsonNumber(
     isOptional: Boolean = false,
     rules: List[JsonRule] = Nil,
-    additionalRules: List[String] = Nil,
-    comments: List[String] = Nil
+    additionalRules: List[BoundMessage] = Nil,
+    comments: List[BoundMessage] = Nil
   ) extends JsonVal {
     override def isOptional(value: Boolean) : JsonNumber =
       copy(isOptional = value)
-    override def additionalRules(value: List[String]) : JsonNumber =
+    override def additionalRules(value: List[BoundMessage]) : JsonNumber =
       copy(additionalRules = value)
-    override def comments(value: List[String]) : JsonNumber =
+    override def comments(value: List[BoundMessage]) : JsonNumber =
       copy(comments = value)
   }
 
   case class JsonInteger(
     isOptional: Boolean = false,
     rules: List[JsonRule] = Nil,
-    additionalRules: List[String] = Nil,
-    comments: List[String] = Nil
+    additionalRules: List[BoundMessage] = Nil,
+    comments: List[BoundMessage] = Nil
   ) extends JsonVal {
     override def isOptional(value: Boolean) : JsonInteger =
       copy(isOptional = value)
-    override def additionalRules(value: List[String]) : JsonInteger =
+    override def additionalRules(value: List[BoundMessage]) : JsonInteger =
       copy(additionalRules = value)
-    override def comments(value: List[String]) : JsonInteger =
+    override def comments(value: List[BoundMessage]) : JsonInteger =
       copy(comments = value)
   }
 
   case class JsonArray(
     isOptional: Boolean = false,
-    additionalRules: List[String] = Nil,
-    comments: List[String] = Nil
+    additionalRules: List[BoundMessage] = Nil,
+    comments: List[BoundMessage] = Nil
   ) extends JsonType {
     override def isOptional(value: Boolean) : JsonArray =
       copy(isOptional = value)
-    override def additionalRules(value: List[String]) : JsonArray =
+    override def additionalRules(value: List[BoundMessage]) : JsonArray =
       copy(additionalRules = value)
-    override def comments(value: List[String]) : JsonArray =
+    override def comments(value: List[BoundMessage]) : JsonArray =
       copy(comments = value)
   }
 
   case class JsonObject(
     isOptional: Boolean = false,
-    additionalRules: List[String] = Nil,
-    comments: List[String] = Nil
+    additionalRules: List[BoundMessage] = Nil,
+    comments: List[BoundMessage] = Nil
   ) extends JsonType {
     override def isOptional(value: Boolean) : JsonObject =
       copy(isOptional = value)
-    override def additionalRules(value: List[String]) : JsonObject =
+    override def additionalRules(value: List[BoundMessage]) : JsonObject =
       copy(additionalRules = value)
-    override def comments(value: List[String]) : JsonObject =
+    override def comments(value: List[BoundMessage]) : JsonObject =
       copy(comments = value)
   }
 

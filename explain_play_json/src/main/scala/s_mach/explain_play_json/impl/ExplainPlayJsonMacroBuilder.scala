@@ -52,7 +52,7 @@ class ExplainPlayJsonMacroBuilder(
 
     val result = c.Expr[ExplainPlayJson[A]] {
       q"""
-s_mach.explain_play_json.ExplainPlayJson[$aType] { implicit i18ncfg:s_mach.i18n.I18NConfig =>
+s_mach.explain_play_json.ExplainPlayJson[$aType] {
   import s_mach.metadata._
   import s_mach.explain_json._
   import s_mach.explain_play_json._

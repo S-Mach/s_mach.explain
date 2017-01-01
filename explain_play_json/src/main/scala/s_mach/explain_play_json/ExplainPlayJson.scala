@@ -25,7 +25,6 @@ import s_mach.codetools.IsValueClass
 import s_mach.codetools.macros.ProductBuilder
 import s_mach.explain_json._
 import s_mach.explain_play_json.impl._
-import s_mach.i18n.I18NConfig
 
 /**
  * Type-class to fetch remarks to explain a Play JSON Format
@@ -33,21 +32,10 @@ import s_mach.i18n.I18NConfig
 trait ExplainPlayJson[A] {
   /** @return a general purpose JSON schema that can be converted to
     * human-readable remarks, JSONSchema or other outputs */
-  def explain(implicit i18ncfg: I18NConfig) : JsonExplanation
+  def explain : JsonExplanation
 }
 
 object ExplainPlayJson {
-  /**
-    * Create an ExplainPlayJson type-class for a type from a function that
-    * accepts i18n configuration.
-    *
-    * @param f function that accepts i18n config and returns a JSON explanation
-    * @tparam A type explained
-    * @return ExplainPlayJson[A] type-class
-    */
-  def apply[A](f: I18NConfig => JsonExplanation) : ExplainPlayJson[A] =
-    ExplainPlayJsonOps.ExplainPlayJsonImpl(f)
-
   /**
     * Create an ExplainPlayJson type-class for a type that doesn't require
     * i18n configuration.
@@ -56,8 +44,8 @@ object ExplainPlayJson {
     * @tparam A type explained
     * @return ExplainPlayJson[A] type-class
     */
-  def materialized[A](explain: JsonExplanation) : ExplainPlayJson[A] =
-    ExplainPlayJsonOps.MaterializedExplainPlayJson(explain)
+  def apply[A](explain: JsonExplanation) : ExplainPlayJson[A] =
+    ExplainPlayJsonOps.ExplainPlayJsonImpl(explain)
 
   /**
     * A product builder for manually creating an ExplainPlayJson type-class

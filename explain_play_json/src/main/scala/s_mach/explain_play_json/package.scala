@@ -18,19 +18,16 @@
 */
 package s_mach
 
-import s_mach.i18n.I18NConfig
 import s_mach.explain_json._
 
 package object explain_play_json extends ExplainPlayJsonImplicits {
   /**
     * Get the Play JsonExplanation for a type
     * @param e implicit ExplainPlayJson type-class for the type
-    * @param i18ncfg i18n configuration
     * @tparam A type to explain
     * @return Play JsonExplanation for the type
     */
   def explainPlayJson[A](implicit
-    e: ExplainPlayJson[A],
-    i18ncfg: I18NConfig
+    e: ExplainPlayJson[A]
   ) : JsonExplanation = e.explain
 }

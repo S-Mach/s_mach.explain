@@ -25,26 +25,20 @@ import s_mach.codetools.IsValueClass
 import s_mach.metadata._
 import s_mach.explain_json._
 import s_mach.explain_play_json._
-import s_mach.i18n.I18NConfig
 
 object ExplainPlayJsonOps {
-  case class MaterializedExplainPlayJson[A](explanation: JsonExplanation) extends ExplainPlayJson[A] {
-    override def explain(implicit i18ncfg: I18NConfig): JsonExplanation = explanation
+  case class ExplainPlayJsonImpl[A](explanation: JsonExplanation) extends ExplainPlayJson[A] {
+    override def explain: JsonExplanation = explanation
   }
 
   case class DelegatedExplainPlayJson[A](wrapped: ExplainPlayJson[_]) extends ExplainPlayJson[A] {
-    override def explain(implicit i18ncfg: I18NConfig): JsonExplanation =
+    override def explain: JsonExplanation =
       wrapped.explain
-  }
-
-  case class ExplainPlayJsonImpl[A](f: I18NConfig => JsonExplanation) extends ExplainPlayJson[A] {
-    override def explain(implicit i18ncfg: I18NConfig): JsonExplanation =
-      f(i18ncfg)
   }
 
   /** @return an ExplainPlayJson for a value */
   def forVal[A](jsi: JsonExplanationNode.JsonVal) : ExplainPlayJson[A] =
-    MaterializedExplainPlayJson[A](
+    ExplainPlayJsonImpl[A](
       TypeMetadata.Val(jsi)
     )
 
@@ -62,7 +56,7 @@ object ExplainPlayJsonOps {
     ea: ExplainPlayJson[A]
   ) : ExplainPlayJson[Option[A]] = {
     new ExplainPlayJson[Option[A]] {
-      override def explain(implicit i18ncfg: I18NConfig): JsonExplanation = {
+      override def explain: JsonExplanation = {
         TypeMetadata.Arr(
           // Note: Option[A] in JSON is represented as "optional" A
           // renders should simply throw away this wrapper and mark the
@@ -93,7 +87,7 @@ object ExplainPlayJsonOps {
   implicit def forTraversable[M[AA] <: Traversable[AA],A](implicit
     ea: ExplainPlayJson[A]
   ) : ExplainPlayJson[M[A]] =
-    ExplainPlayJsonImpl[M[A]] { implicit i18ncfg =>
+    ExplainPlayJsonImpl[M[A]] {
       TypeMetadata.Arr(
         // Note: Option[A] is represented in JSON by "optional" A
         // the Option is not actually emitted

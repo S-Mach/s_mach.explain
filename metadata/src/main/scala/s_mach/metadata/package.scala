@@ -53,7 +53,7 @@ package object metadata extends MetadataImplicits {
   implicit class S_Mach_Metadata_TypeRemarksPML(val self: TypeRemarks) extends AnyVal {
     /** @return a list of string messages for the remarks in the for "path: remark" */
     def print : List[String] =
-      self.nodes.toStream.flatMap { case (path,messages) =>
+      self.nodesStream.flatMap { case (path,messages) =>
         messages.value.map(msg => s"${path.print}: $msg")
       }.toList
   }
@@ -61,7 +61,7 @@ package object metadata extends MetadataImplicits {
   implicit class S_Mach_Metadata_RemarksPML(val self: Remarks) extends AnyVal {
     /** @return a list of string messages for the remarks in the for "path: remark" */
     def print : List[String] =
-      self.nodes.toStream.flatMap { case (path,messages) =>
+      self.nodesStream.flatMap { case (path,messages) =>
         messages.value.map(msg => s"${path.print}: $msg")
       }.toList
   }

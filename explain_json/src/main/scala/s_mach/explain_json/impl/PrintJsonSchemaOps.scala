@@ -20,10 +20,10 @@ package s_mach.explain_json.impl
 
 
 import s_mach.i18n.I18NConfig
-
 import s_mach.metadata._
 import s_mach.explain_json._
 import JsonExplanationNode._
+import s_mach.i18n.messages.BoundMessage
 
 object PrintJsonSchemaOps {
   private def isOptionalField(field: (String,JsonExplanation)) : Boolean = {
@@ -78,9 +78,10 @@ object PrintJsonSchemaOps {
   }
 
   def maybeAdditionalRules[JsonRepr](
-    additionalRules: List[String]
+    additionalRules: List[BoundMessage]
   )(implicit
-    builder: JsonBuilder[JsonRepr]
+    builder: JsonBuilder[JsonRepr],
+    i18nconfig: I18NConfig
   ) : Unit = {
     import builder._
 
@@ -88,7 +89,7 @@ object PrintJsonSchemaOps {
       appendField("additionalRules") {
         appendArray {
           additionalRules.foreach(rule =>
-            append(rule)
+            append(rule(i18nconfig))
           )
         }
       }
@@ -96,16 +97,19 @@ object PrintJsonSchemaOps {
   }
 
   def maybeComments[JsonRepr](
-    comments: List[String]
+    comments: List[BoundMessage]
   )(implicit
-    builder: JsonBuilder[JsonRepr]
+    builder: JsonBuilder[JsonRepr],
+    i18nconfig: I18NConfig
   ) : Unit = {
     import builder._
 
     if (comments.nonEmpty) {
       appendField("comments") {
         appendArray {
-          comments.foreach(append)
+          comments.foreach { comment =>
+            append(comment(i18nconfig))
+          }
         }
       }
     }
@@ -122,7 +126,13 @@ object PrintJsonSchemaOps {
     implicit val _builder = builder
     import builder._
 
-//    val commentsForRule = pjc.explainRule.lift.andThen(_.toList)
+    val commentsForRule =
+    { rule:JsonRule =>
+      { implicit cfg:I18NConfig =>
+        JsonExplanationOps.printJsonRuleRemark(rule)
+      }
+    }
+//      pjc.explainRule.lift.andThen(_.toList)
 //    val commentsForRule = { _:JsonRule => Nil }
 
     def loop(id: String, tm: JsonExplanation) : Unit = {
@@ -137,7 +147,7 @@ object PrintJsonSchemaOps {
           maybeRules(value.rules)
           maybeAdditionalRules(value.additionalRules)
           maybeComments(
-            value.comments // ::: value.rules.flatMap(commentsForRule)
+            value.comments ::: value.rules.map(commentsForRule)
           )
         // Note: Option[A] isn't directly represented in JSON
         // Emit nothing for Option and recurse on A

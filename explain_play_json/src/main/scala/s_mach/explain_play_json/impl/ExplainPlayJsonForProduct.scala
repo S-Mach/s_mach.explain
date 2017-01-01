@@ -48,7 +48,7 @@ case class ExplainPlayJsonForProduct[A](
     )
   }
 
-  def build() = ExplainPlayJson { implicit i18ncfg =>
+  def build() = ExplainPlayJson {
     TypeMetadata.Rec[JsonExplanationNode](
       JsonExplanationNode.JsonObject(),
       fields.map { case (f,fieldExplainPlayJson) =>
