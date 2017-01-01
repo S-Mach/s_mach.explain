@@ -45,7 +45,7 @@ class MetadataBuildJsonImpl[A](implicit
         _buildVal(value)
 
       case a@Metadata.Arr(value,Cardinality.ZeroOrOne,_) =>
-        a.indexToMetadata.foreach { case (index, memberMetadata) =>
+        a.members.zipWithIndex.foreach { case (memberMetadata,index) =>
           loop(memberMetadata)
         }
 
@@ -56,7 +56,7 @@ class MetadataBuildJsonImpl[A](implicit
               _buildVal(value)
             }
           }
-          a.indexToMetadata.foreach { case (index, memberMetadata) =>
+          a.members.zipWithIndex.foreach { case (memberMetadata, index) =>
             pruneIfEmpty {
               appendField(index.toString) {
                 loop(memberMetadata)
@@ -72,7 +72,7 @@ class MetadataBuildJsonImpl[A](implicit
               _buildVal(value)
             }
           }
-          r.fieldToMetadata.foreach { case (field, memberMetadata) =>
+          r.fields.foreach { case (field, memberMetadata) =>
             pruneIfEmpty {
               appendField(field) {
                 loop(memberMetadata)

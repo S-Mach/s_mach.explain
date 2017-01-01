@@ -74,7 +74,7 @@ class TypeMetadataBuildJsonImpl[A](implicit
               _buildVal(value)
             }
           }
-          r.fieldToTypeMetadata.foreach { case (field, fieldTypeMetadata) =>
+          r.fields.foreach { case (field, fieldTypeMetadata) =>
             pruneIfEmpty {
               appendField(field) {
                 loop(fieldTypeMetadata)

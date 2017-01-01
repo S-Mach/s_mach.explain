@@ -21,7 +21,7 @@ package s_mach.explain_play_json
 import java.util.Locale
 
 import org.scalatest.{FlatSpec, Matchers}
-import ExampleUsage._
+import example.ExampleUsage._
 import ExampleExpectedOutput._
 import s_mach.i18n.I18NConfig
 

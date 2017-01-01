@@ -18,10 +18,10 @@
 */
 package s_mach.explain_play_json
 
-import s_mach.metadata._
-import s_mach.explain_json._
 import s_mach.explain_json.JsonExplanationNode._
+import s_mach.explain_json._
 import s_mach.i18n.I18NConfig
+import s_mach.metadata._
 
 object ExampleExpectedOutput {
   def expected_jsonExplanation_Name(implicit i18ncfg: I18NConfig) : JsonExplanation =

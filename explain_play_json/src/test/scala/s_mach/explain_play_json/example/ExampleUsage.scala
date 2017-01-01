@@ -16,11 +16,11 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.explain_play_json
-
+package s_mach.explain_play_json.example
 
 object ExampleUsage {
   import java.util.Locale
+
   import s_mach.i18n._
   implicit val i18ncfg = I18NConfig(Locale.US)
   import play.api.libs.json.JsValue
