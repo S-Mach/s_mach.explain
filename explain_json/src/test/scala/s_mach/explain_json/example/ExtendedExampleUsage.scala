@@ -28,8 +28,8 @@ object ExtendedExampleUsage {
   // It isn't expected that these will be declared by hand
   val jsonExplanation_String : JsonExplanation =
     TypeMetadata.Val(JsonString(
-      additionalRules = m_string_rule1.bind() :: m_string_rule2.bind() :: Nil,
-      comments = m_string_comment1.bind() :: m_string_comment2.bind() :: Nil
+      additionalRules = m_string_rule1 :: m_string_rule2 :: Nil,
+      comments = m_string_comment1 :: m_string_comment2 :: Nil
     ))
 
   val jsonExplanation_Option_String : JsonExplanation =
@@ -44,8 +44,8 @@ object ExtendedExampleUsage {
   val jsonExplanation_Name : JsonExplanation =
     TypeMetadata.Rec(
       JsonObject(
-        additionalRules = m_name_type_rule1.bind() :: m_name_type_rule2.bind() :: Nil,
-        comments = m_name_type_comment1.bind() :: m_name_type_comment2.bind() :: Nil
+        additionalRules = m_name_type_rule1 :: m_name_type_rule2 :: Nil,
+        comments = m_name_type_comment1 :: m_name_type_comment2 :: Nil
       ),
       Seq(
         "first" -> {
@@ -53,8 +53,8 @@ object ExtendedExampleUsage {
           val ev = e.value.asInstanceOf[JsonType]
           e.value(
             ev
-              .additionalRules(m_first_field_rule1.bind() :: m_first_field_rule2.bind() :: ev.additionalRules)
-              .comments(m_first_field_comment1.bind() :: m_first_field_comment2.bind() :: ev.comments)
+              .additionalRules(m_first_field_rule1 :: m_first_field_rule2 :: ev.additionalRules)
+              .comments(m_first_field_comment1 :: m_first_field_comment2 :: ev.comments)
           )
         },
         "middle" -> jsonExplanation_Option_String,
@@ -64,8 +64,8 @@ object ExtendedExampleUsage {
 
   val jsonExplanation_Int : JsonExplanation =
     TypeMetadata.Val(JsonInteger(
-      additionalRules = m_int_rule1.bind() :: m_int_rule2.bind() :: Nil,
-      comments = m_int_comment1.bind() :: m_int_comment2.bind() :: Nil
+      additionalRules = m_int_rule1 :: m_int_rule2 :: Nil,
+      comments = m_int_comment1 :: m_int_comment2 :: Nil
     ))
 
   val jsonExplanation_List_Int : JsonExplanation =
@@ -78,8 +78,8 @@ object ExtendedExampleUsage {
   val jsonExplanation_Person : JsonExplanation =
     TypeMetadata.Rec(
       JsonObject(
-        additionalRules = m_person_type_rule1.bind() :: m_person_type_rule2.bind() :: Nil,
-        comments = m_person_type_comment1.bind() :: m_person_type_comment2.bind() :: Nil
+        additionalRules = m_person_type_rule1 :: m_person_type_rule2 :: Nil,
+        comments = m_person_type_comment1 :: m_person_type_comment2 :: Nil
       ),
       Seq(
         "name" -> {
@@ -87,8 +87,8 @@ object ExtendedExampleUsage {
           val ev = e.value.asInstanceOf[JsonType]
           e.value(
             ev
-              .additionalRules(m_name_field_rule1.bind() :: m_name_field_rule2.bind() :: ev.additionalRules)
-              .comments(m_name_field_comment1.bind() :: m_name_field_comment2.bind() :: ev.comments)
+              .additionalRules(m_name_field_rule1 :: m_name_field_rule2 :: ev.additionalRules)
+              .comments(m_name_field_comment1 :: m_name_field_comment2 :: ev.comments)
           )
         },
         "age" -> jsonExplanation_Int,
